@@ -1,0 +1,75 @@
+.page {
+  margin: 0 auto;
+  max-width: 980px;
+  padding: 34px 20px;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #333;
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.panel h1 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.summaryCard {
+  border: 1px solid #777;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.summaryCard h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.score {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.copyBlock {
+  display: grid;
+  gap: 10px;
+}
+
+.copyBlock textarea {
+  border: 1px solid #777;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  min-height: 340px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actions a,
+.actions button {
+  border: 1px solid #333;
+  color: #111;
+  min-height: 34px;
+  padding: 7px 12px;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}

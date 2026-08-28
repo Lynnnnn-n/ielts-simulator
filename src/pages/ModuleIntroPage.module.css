@@ -1,0 +1,24 @@
+.page {
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 32px 20px;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.intro {
+  background: #fff;
+  border: 1px solid #333;
+  padding: 22px;
+}
+
+.intro h1 {
+  font-size: 26px;
+}
+
+.intro button {
+  min-width: 180px;
+}

@@ -1,0 +1,81 @@
+.question {
+  border-bottom: 1px solid #c8c8c8;
+  padding: 18px 18px 20px;
+}
+
+.topLine {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.number {
+  align-items: center;
+  background: #111;
+  color: #fff;
+  display: inline-flex;
+  font-weight: 700;
+  height: 28px;
+  justify-content: center;
+  min-width: 28px;
+  padding: 0 8px;
+}
+
+.flagButton {
+  border-color: #777;
+  font-size: 13px;
+  min-height: 28px;
+  padding: 3px 8px;
+}
+
+.instruction {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.prompt {
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.textInput {
+  border: 1px solid #777;
+  min-height: 34px;
+  padding: 6px 8px;
+  width: min(100%, 360px);
+}
+
+.options {
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  align-items: start;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 20px 24px 1fr;
+  line-height: 1.4;
+}
+
+.review {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 8px;
+}
+
+.correct {
+  background: #d9ead3;
+}
+
+.incorrect {
+  background: #f4cccc;
+}
+
+.unanswered {
+  background: #fff2cc;
+}

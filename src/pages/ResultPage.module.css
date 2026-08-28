@@ -1,0 +1,40 @@
+.page {
+  margin: 0 auto;
+  max-width: 900px;
+  padding: 34px 20px;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #333;
+  padding: 24px;
+}
+
+.panel h1 {
+  font-size: 26px;
+}
+
+.score {
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.band {
+  font-size: 24px;
+  margin: 8px 0 20px;
+}
+
+.writingResults {
+  display: grid;
+  gap: 18px;
+}
+
+.writingResults section {
+  border-top: 1px solid #bbb;
+  padding-top: 18px;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 22px;
+}

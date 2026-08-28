@@ -1,0 +1,39 @@
+.player {
+  align-items: center;
+  border: 1px solid #777;
+  display: inline-flex;
+  gap: 12px;
+  padding: 10px;
+}
+
+.player button {
+  min-width: 112px;
+}
+
+.volume {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.volume input {
+  accent-color: #111;
+  width: 120px;
+}
+
+.missing {
+  border: 1px solid #777;
+  color: #5a2d00;
+  display: inline-block;
+  padding: 10px;
+}
+
+.error {
+  color: #8a1f11;
+  font-size: 13px;
+}
+
+.status {
+  color: #444;
+  font-size: 13px;
+}

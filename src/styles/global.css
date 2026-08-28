@@ -1,0 +1,58 @@
+:root {
+  color: #111;
+  background: #f4f4f4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 1px solid #333;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  min-height: 34px;
+  padding: 6px 12px;
+}
+
+button:disabled {
+  color: #777;
+  border-color: #aaa;
+  background: #e8e8e8;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+a {
+  color: #0645ad;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}

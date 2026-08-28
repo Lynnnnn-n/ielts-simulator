@@ -1,0 +1,88 @@
+.passage {
+  user-select: text;
+}
+
+.passage p {
+  line-height: 1.65;
+}
+
+.passage h2 {
+  font-size: 22px;
+}
+
+.passage h3 {
+  font-size: 17px;
+}
+
+.passage p {
+  line-height: 1.65;
+}
+
+.highlight {
+  background: #fff176;
+  color: inherit;
+  padding: 0 1px;
+}
+
+.noteRange {
+  border-bottom: 2px solid #c79200;
+  padding-bottom: 1px;
+}
+
+.noteMarker {
+  background: #fff8c6;
+  border: 1px solid #9b7b00;
+  color: #111;
+  font-size: 11px;
+  line-height: 1;
+  margin-left: 3px;
+  min-height: 18px;
+  padding: 2px 4px;
+  vertical-align: text-top;
+}
+
+.contextMenu {
+  background: #fff;
+  border: 1px solid #333;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+  display: grid;
+  min-width: 142px;
+  position: fixed;
+  z-index: 15;
+}
+
+.contextMenu button {
+  border: 0;
+  justify-content: flex-start;
+  min-height: 32px;
+  text-align: left;
+}
+
+.contextMenu button + button {
+  border-top: 1px solid #ccc;
+}
+
+.noteEditor {
+  background: #fff;
+  border: 1px solid #333;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 20%);
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  position: fixed;
+  width: 260px;
+  z-index: 16;
+}
+
+.noteEditor textarea {
+  border: 1px solid #777;
+  min-height: 96px;
+  padding: 7px;
+  resize: vertical;
+}
+
+.noteActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

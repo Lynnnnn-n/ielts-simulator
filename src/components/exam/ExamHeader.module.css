@@ -1,0 +1,46 @@
+.header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #222;
+  display: flex;
+  height: 64px;
+  justify-content: space-between;
+  padding: 10px 18px;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.context {
+  color: #444;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.fontControl {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.fontControl select {
+  background: #fff;
+  border: 1px solid #777;
+  min-height: 30px;
+  padding: 3px 6px;
+}
+
+.submitButton {
+  background: #f8f8f8;
+  min-width: 86px;
+}

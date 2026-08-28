@@ -1,0 +1,144 @@
+.examPage {
+  background: #e9e9e9;
+  display: grid;
+  grid-template-rows: 64px auto minmax(0, 1fr);
+  height: 100vh;
+}
+
+.loading {
+  padding: 24px;
+}
+
+.tabs {
+  background: #fff;
+  border-bottom: 1px solid #222;
+  display: flex;
+  gap: 0;
+  padding: 0 18px;
+}
+
+.tabs button {
+  border-bottom: 0;
+  border-left: 1px solid #333;
+  border-top: 0;
+  min-width: 110px;
+}
+
+.tabs button:last-child {
+  border-right: 1px solid #333;
+}
+
+.activeTab {
+  background: #d9e2f3;
+  font-weight: 700;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.8fr) minmax(360px, 1.2fr);
+  min-height: 0;
+}
+
+.font-standard {
+  font-size: 16px;
+}
+
+.font-large {
+  font-size: 18px;
+}
+
+.font-extra-large {
+  font-size: 20px;
+}
+
+.promptPane,
+.editorPane {
+  background: #fff;
+  min-height: 0;
+  overflow: auto;
+}
+
+.promptPane {
+  border-right: 1px solid #222;
+  padding: 26px;
+}
+
+.promptPane h1 {
+  font-size: 22px;
+}
+
+.promptPane p {
+  line-height: 1.65;
+}
+
+.taskTable {
+  border-collapse: collapse;
+  margin-top: 28px;
+  width: 100%;
+}
+
+.taskTable caption {
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.taskTable th,
+.taskTable td {
+  border: 1px solid #222;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.taskTable thead th {
+  background: #efefef;
+}
+
+.taskTable tbody th {
+  font-weight: 400;
+  width: 42%;
+}
+
+.taskTable tbody tr:last-child th,
+.taskTable tbody tr:last-child td {
+  font-weight: 700;
+}
+
+.editorPane {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: 18px;
+}
+
+.editorPane textarea {
+  border: 1px solid #777;
+  line-height: 1.55;
+  min-height: 320px;
+  padding: 14px;
+  resize: none;
+  width: 100%;
+}
+
+.wordCount {
+  background: #fff;
+  border: 1px solid #777;
+  border-top: 0;
+  padding: 8px 10px;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .examPage {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .promptPane {
+    border-bottom: 1px solid #222;
+    border-right: 0;
+  }
+}

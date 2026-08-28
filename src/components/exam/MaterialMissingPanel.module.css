@@ -1,0 +1,28 @@
+.panel {
+  background: #fff;
+  border: 1px solid #333;
+  margin: 24px auto;
+  max-width: 900px;
+  padding: 22px;
+}
+
+.panel h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.panel h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.block {
+  border-top: 1px solid #ccc;
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.panel ul {
+  margin-bottom: 0;
+  padding-left: 22px;
+}

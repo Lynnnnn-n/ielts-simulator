@@ -1,0 +1,19 @@
+import type { TestAsset } from "../../domain/examTypes";
+import styles from "./AssetImage.module.css";
+
+interface AssetImageProps {
+  asset: TestAsset;
+}
+
+export function AssetImage({ asset }: AssetImageProps) {
+  if (asset.type !== "image") {
+    return null;
+  }
+
+  return (
+    <figure className={styles.figure}>
+      <img alt={asset.description} src={asset.path} draggable={false} />
+      <figcaption>{asset.description}</figcaption>
+    </figure>
+  );
+}
