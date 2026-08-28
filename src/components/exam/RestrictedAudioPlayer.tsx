@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ListeningPlaybackState } from "../../domain/examTypes";
 import styles from "./RestrictedAudioPlayer.module.css";
 
@@ -7,6 +7,7 @@ interface RestrictedAudioPlayerProps {
   src?: string;
   playbackState: ListeningPlaybackState;
   onStarted: () => void;
+  onStopped: () => void;
   onCompleted: () => void;
 }
 
@@ -15,15 +16,34 @@ export function RestrictedAudioPlayer({
   src,
   playbackState,
   onStarted,
+  onStopped,
   onCompleted,
 }: RestrictedAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const onStoppedRef = useRef(onStopped);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [volume, setVolume] = useState(1);
   const completed = playbackState.completedPartIds.includes(partId);
   const otherPartIsPlaying =
     Boolean(playbackState.activePartId) && playbackState.activePartId !== partId;
+
+  useEffect(() => {
+    onStoppedRef.current = onStopped;
+  }, [onStopped]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    return () => {
+      if (!audio || audio.paused || audio.ended) {
+        return;
+      }
+
+      audio.pause();
+      onStoppedRef.current();
+    };
+  }, [partId, src]);
 
   async function startPlayback() {
     const audio = audioRef.current;
@@ -38,6 +58,7 @@ export function RestrictedAudioPlayer({
       await audio.play();
       setIsPlaying(true);
     } catch {
+      onStopped();
       setHasError(true);
     }
   }

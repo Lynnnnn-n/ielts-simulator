@@ -52,6 +52,7 @@ interface ExamStoreState {
   clearReadingMarks: (testId: string) => void;
   setFontSize: (testId: string, module: ExamModule, fontSize: ExamFontSize) => void;
   markListeningPlaybackStarted: (testId: string, partId: string) => void;
+  markListeningPlaybackStopped: (testId: string, partId: string) => void;
   markListeningPlaybackCompleted: (testId: string, partId: string) => void;
   setWriting: (
     testId: string,
@@ -345,6 +346,24 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
             started: true,
             startedAt: Date.now(),
             activePartId: partId,
+          },
+        };
+      }),
+    );
+  },
+
+  markListeningPlaybackStopped(testId, partId) {
+    set((state) =>
+      updateSession(state, testId, "listening", (session) => {
+        if (session.listeningPlayback.activePartId !== partId) {
+          return session;
+        }
+
+        return {
+          ...session,
+          listeningPlayback: {
+            ...session.listeningPlayback,
+            activePartId: undefined,
           },
         };
       }),

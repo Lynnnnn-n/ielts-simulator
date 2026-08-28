@@ -42,6 +42,9 @@ export function ListeningExamPage() {
   const markListeningPlaybackStarted = useExamStore(
     (state) => state.markListeningPlaybackStarted,
   );
+  const markListeningPlaybackStopped = useExamStore(
+    (state) => state.markListeningPlaybackStopped,
+  );
   const markListeningPlaybackCompleted = useExamStore(
     (state) => state.markListeningPlaybackCompleted,
   );
@@ -586,6 +589,9 @@ export function ListeningExamPage() {
             src={audioAsset?.path}
             onStarted={() =>
               markListeningPlaybackStarted(loadedTest.metadata.id, part.id)
+            }
+            onStopped={() =>
+              markListeningPlaybackStopped(loadedTest.metadata.id, part.id)
             }
             onCompleted={() =>
               markListeningPlaybackCompleted(loadedTest.metadata.id, part.id)

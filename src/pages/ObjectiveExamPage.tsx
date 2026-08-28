@@ -46,6 +46,9 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
   const markListeningPlaybackStarted = useExamStore(
     (state) => state.markListeningPlaybackStarted,
   );
+  const markListeningPlaybackStopped = useExamStore(
+    (state) => state.markListeningPlaybackStopped,
+  );
   const markListeningPlaybackCompleted = useExamStore(
     (state) => state.markListeningPlaybackCompleted,
   );
@@ -292,6 +295,9 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
                   }
                   onStarted={() =>
                     markListeningPlaybackStarted(loadedTest.metadata.id, part.id)
+                  }
+                  onStopped={() =>
+                    markListeningPlaybackStopped(loadedTest.metadata.id, part.id)
                   }
                   onCompleted={() =>
                     markListeningPlaybackCompleted(loadedTest.metadata.id, part.id)
