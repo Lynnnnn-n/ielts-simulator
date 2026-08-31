@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
 import { ModuleIntroPage } from "../pages/exam/ModuleIntroPage";
 import { FinalResultPage } from "../pages/results/FinalResultPage";
+import { ListeningExamPage } from "../pages/exam/ListeningExamPage";
 import { ObjectiveExamPage } from "../pages/exam/ObjectiveExamPage";
 import { ResultPage } from "../pages/results/ResultPage";
 import { ReviewPage } from "../pages/results/ReviewPage";
@@ -21,7 +22,7 @@ export function App() {
       />
       <Route
         path="/test/:testId/listening/exam"
-        element={<ObjectiveExamPage module="listening" />}
+        element={<ListeningExamPage />}
       />
       <Route
         path="/test/:testId/writing/exam"

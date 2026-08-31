@@ -339,7 +339,7 @@ const listeningQuestions: Question[] = Array.from({ length: 40 }, (_, index) => 
       sectionStart
         ? test1ListeningPartTexts[sectionIndex]
         : undefined,
-    prompt: `Answer for question ${number}`,
+    prompt: "",
     options: number === 21 || number === 22 ? abcOptions : undefined,
     imageAssetIds:
       number === 1

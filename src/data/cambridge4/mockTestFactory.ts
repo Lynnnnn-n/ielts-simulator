@@ -65,7 +65,7 @@ function makeQuestions(
       number,
       type: "text" as const,
       ...(instruction ? { instruction } : {}),
-      prompt: `Answer for question ${number}`,
+      prompt: "",
       ...(imageAssetIds ? { imageAssetIds } : {}),
     };
   });

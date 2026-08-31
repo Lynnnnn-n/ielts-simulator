@@ -7,6 +7,7 @@ import { MaterialMissingPanel } from "../../components/exam/MaterialMissingPanel
 import { QuestionNavigator } from "../../components/exam/QuestionNavigator";
 import { RestrictedAudioPlayer } from "../../components/exam/RestrictedAudioPlayer";
 import { SubmitConfirmationDialog } from "../../components/exam/SubmitConfirmationDialog";
+import { EmbeddedQuestionSheet } from "../../components/questions/EmbeddedQuestionSheet";
 import { QuestionRenderer } from "../../components/questions/QuestionRenderer";
 import type { ObjectiveModule, Question } from "../../domain/examTypes";
 import { useExamStore } from "../../store/examStore";
@@ -209,6 +210,38 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
     ));
   }
 
+  const usesEmbeddedReadingSheet =
+    module === "reading" && questions.every((question) => !question.prompt.trim());
+
+  function renderEmbeddedReadingQuestions() {
+    return loadedTest.reading.passages.map((passage) => {
+      const firstQuestion = questions.find(
+        (question) => question.id === passage.questionIds[0],
+      );
+
+      if (!firstQuestion?.instruction) {
+        return null;
+      }
+
+      return (
+        <EmbeddedQuestionSheet
+          answers={activeSession.answers}
+          key={passage.id}
+          module="reading"
+          questionIds={passage.questionIds}
+          questions={questions}
+          text={firstQuestion.instruction}
+          onAnswer={(questionId, value) =>
+            setAnswer(loadedTest.metadata.id, module, questionId, value)
+          }
+          onFocusQuestion={(questionId) =>
+            setCurrentQuestion(loadedTest.metadata.id, module, questionId)
+          }
+        />
+      );
+    });
+  }
+
   return (
     <main className={styles.examPage}>
       <ExamHeader
@@ -308,7 +341,9 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
           </section>
         )}
         <section className={styles.questionPane}>
-          {renderQuestions(questions)}
+          {usesEmbeddedReadingSheet
+            ? renderEmbeddedReadingQuestions()
+            : renderQuestions(questions)}
         </section>
       </div>
       <QuestionNavigator

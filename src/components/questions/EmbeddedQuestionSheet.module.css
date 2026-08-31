@@ -1,0 +1,58 @@
+.sheet {
+  padding: 18px;
+}
+
+.line {
+  line-height: 1.65;
+  margin: 0 0 4px;
+  min-height: 28px;
+  white-space: pre-wrap;
+}
+
+.sectionTitle {
+  font-weight: 700;
+  margin-top: 14px;
+}
+
+.questionLine {
+  margin-top: 10px;
+}
+
+.answerInput {
+  border: 1px solid #111;
+  border-radius: 0;
+  display: inline-block;
+  font: inherit;
+  height: 30px;
+  margin: 0 5px;
+  padding: 3px 6px;
+  vertical-align: middle;
+  width: 170px;
+}
+
+.answerInput:focus {
+  outline: 2px solid #111;
+  outline-offset: 1px;
+}
+
+.choiceGroup {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 10px 26px;
+}
+
+.choiceOption {
+  align-items: center;
+  border: 1px solid #777;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  min-height: 30px;
+  padding: 3px 9px;
+}
+
+.choiceOption input {
+  margin: 0;
+}

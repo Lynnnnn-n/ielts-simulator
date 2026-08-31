@@ -48,7 +48,9 @@ export function QuestionRenderer({
       {question.instruction ? (
         <p className={styles.instruction}>{question.instruction}</p>
       ) : null}
-      <p className={styles.prompt}>{question.prompt}</p>
+      {question.prompt.trim() ? (
+        <p className={styles.prompt}>{question.prompt}</p>
+      ) : null}
       {imageAssets.map((asset) => (
         <AssetImage asset={asset} key={asset.id} />
       ))}
