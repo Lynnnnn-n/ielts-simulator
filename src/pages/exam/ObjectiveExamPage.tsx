@@ -1,17 +1,17 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { ExamHeader } from "../components/exam/ExamHeader";
-import { AssetImage } from "../components/exam/AssetImage";
-import { HighlightablePassage } from "../components/exam/HighlightablePassage";
-import { MaterialMissingPanel } from "../components/exam/MaterialMissingPanel";
-import { QuestionNavigator } from "../components/exam/QuestionNavigator";
-import { RestrictedAudioPlayer } from "../components/exam/RestrictedAudioPlayer";
-import { SubmitConfirmationDialog } from "../components/exam/SubmitConfirmationDialog";
-import { QuestionRenderer } from "../components/questions/QuestionRenderer";
-import type { ObjectiveModule, Question } from "../domain/examTypes";
-import { useExamStore } from "../store/examStore";
-import { moduleTitle, useMockTest } from "./pageUtils";
-import { useActiveExamLeaveWarning } from "./useActiveExamLeaveWarning";
+import { ExamHeader } from "../../components/exam/ExamHeader";
+import { AssetImage } from "../../components/exam/AssetImage";
+import { HighlightablePassage } from "../../components/exam/HighlightablePassage";
+import { MaterialMissingPanel } from "../../components/exam/MaterialMissingPanel";
+import { QuestionNavigator } from "../../components/exam/QuestionNavigator";
+import { RestrictedAudioPlayer } from "../../components/exam/RestrictedAudioPlayer";
+import { SubmitConfirmationDialog } from "../../components/exam/SubmitConfirmationDialog";
+import { QuestionRenderer } from "../../components/questions/QuestionRenderer";
+import type { ObjectiveModule, Question } from "../../domain/examTypes";
+import { useExamStore } from "../../store/examStore";
+import { moduleTitle, useMockTest } from "../pageUtils";
+import { useActiveExamLeaveWarning } from "../useActiveExamLeaveWarning";
 import styles from "./ObjectiveExamPage.module.css";
 
 interface ObjectiveExamPageProps {

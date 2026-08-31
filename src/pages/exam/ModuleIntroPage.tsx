@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
-import { MaterialMissingPanel } from "../components/exam/MaterialMissingPanel";
-import { examModules, isSubmittedSession, isTestComplete } from "../domain/testCompletion";
-import { useExamStore } from "../store/examStore";
-import { isExamModule, moduleTitle, useMockTest } from "./pageUtils";
+import { MaterialMissingPanel } from "../../components/exam/MaterialMissingPanel";
+import { examModules, isSubmittedSession, isTestComplete } from "../../domain/testCompletion";
+import { useExamStore } from "../../store/examStore";
+import { isExamModule, moduleTitle, useMockTest } from "../pageUtils";
 import styles from "./ModuleIntroPage.module.css";
 
 export function ModuleIntroPage() {

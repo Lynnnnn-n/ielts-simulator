@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import type { MockTest } from "../domain/examTypes";
+import type { MockTest } from "../../domain/examTypes";
 import {
   examModules,
   getAvailableModules,
   isSubmittedSession,
-} from "../domain/testCompletion";
-import { testRepository } from "../services/testRepository";
-import { useExamStore } from "../store/examStore";
+} from "../../domain/testCompletion";
+import { testRepository } from "../../services/testRepository";
+import { useExamStore } from "../../store/examStore";
 import styles from "./TestSelectionPage.module.css";
 
 export function TestSelectionPage() {

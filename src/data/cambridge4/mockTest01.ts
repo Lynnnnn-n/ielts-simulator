@@ -4,7 +4,7 @@ import type {
   MockTest,
   Question,
   TestAsset,
-} from "../domain/examTypes";
+} from "../../domain/examTypes";
 
 function imagePage(page: number, description: string): TestAsset {
   return {

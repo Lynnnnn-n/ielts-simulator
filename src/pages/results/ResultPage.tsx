@@ -4,9 +4,9 @@ import {
   examModules,
   isSubmittedSession,
   isTestComplete,
-} from "../domain/testCompletion";
-import { isExamModule, moduleTitle, useMockTest } from "./pageUtils";
-import { useExamStore } from "../store/examStore";
+} from "../../domain/testCompletion";
+import { isExamModule, moduleTitle, useMockTest } from "../pageUtils";
+import { useExamStore } from "../../store/examStore";
 import styles from "./ResultPage.module.css";
 
 export function ResultPage() {

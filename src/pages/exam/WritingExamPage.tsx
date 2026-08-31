@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { ExamHeader } from "../components/exam/ExamHeader";
-import { AssetImage } from "../components/exam/AssetImage";
-import { MaterialMissingPanel } from "../components/exam/MaterialMissingPanel";
-import { SubmitConfirmationDialog } from "../components/exam/SubmitConfirmationDialog";
-import { countWords } from "../domain/wordCount";
-import { useExamStore } from "../store/examStore";
-import { useMockTest } from "./pageUtils";
-import { useActiveExamLeaveWarning } from "./useActiveExamLeaveWarning";
+import { ExamHeader } from "../../components/exam/ExamHeader";
+import { AssetImage } from "../../components/exam/AssetImage";
+import { MaterialMissingPanel } from "../../components/exam/MaterialMissingPanel";
+import { SubmitConfirmationDialog } from "../../components/exam/SubmitConfirmationDialog";
+import { countWords } from "../../domain/wordCount";
+import { useExamStore } from "../../store/examStore";
+import { useMockTest } from "../pageUtils";
+import { useActiveExamLeaveWarning } from "../useActiveExamLeaveWarning";
 import styles from "./WritingExamPage.module.css";
 
 export function WritingExamPage() {

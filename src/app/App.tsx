@@ -1,12 +1,12 @@
 import { Navigate, Route, Routes } from "react-router";
-import { ModuleIntroPage } from "../pages/ModuleIntroPage";
-import { FinalResultPage } from "../pages/FinalResultPage";
-import { ObjectiveExamPage } from "../pages/ObjectiveExamPage";
-import { ResultPage } from "../pages/ResultPage";
-import { ReviewPage } from "../pages/ReviewPage";
-import { TestSelectionPage } from "../pages/TestSelectionPage";
-import { TestOverviewPage } from "../pages/TestOverviewPage";
-import { WritingExamPage } from "../pages/WritingExamPage";
+import { ModuleIntroPage } from "../pages/exam/ModuleIntroPage";
+import { FinalResultPage } from "../pages/results/FinalResultPage";
+import { ObjectiveExamPage } from "../pages/exam/ObjectiveExamPage";
+import { ResultPage } from "../pages/results/ResultPage";
+import { ReviewPage } from "../pages/results/ReviewPage";
+import { TestSelectionPage } from "../pages/library/TestSelectionPage";
+import { TestOverviewPage } from "../pages/library/TestOverviewPage";
+import { WritingExamPage } from "../pages/exam/WritingExamPage";
 import { AdminTestManagementPage } from "../pages/admin/AdminTestManagementPage";
 
 export function App() {

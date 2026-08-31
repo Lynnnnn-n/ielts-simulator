@@ -6,7 +6,7 @@ import type {
   ReadingPassage,
   TestAsset,
   WritingTask,
-} from "../domain/examTypes";
+} from "../../domain/examTypes";
 
 export type AnswerSpec = [number, string[]] | [number, string[], string];
 

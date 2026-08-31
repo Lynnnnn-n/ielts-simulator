@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
-import { createFinalResultSummary } from "../domain/finalResult";
+import { createFinalResultSummary } from "../../domain/finalResult";
 import {
   examModules,
   getAvailableModules,
   isTestComplete,
-} from "../domain/testCompletion";
-import { useExamStore } from "../store/examStore";
-import { moduleTitle, useMockTest } from "./pageUtils";
+} from "../../domain/testCompletion";
+import { useExamStore } from "../../store/examStore";
+import { moduleTitle, useMockTest } from "../pageUtils";
 import styles from "./FinalResultPage.module.css";
 
 export function FinalResultPage() {

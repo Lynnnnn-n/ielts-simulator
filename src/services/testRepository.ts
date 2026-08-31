@@ -1,7 +1,7 @@
-import { mockTest01 } from "../data/mockTest01";
-import { mockTest02 } from "../data/mockTest02";
-import { mockTest03 } from "../data/mockTest03";
-import { mockTest04 } from "../data/mockTest04";
+import { mockTest01 } from "../data/cambridge4/mockTest01";
+import { mockTest02 } from "../data/cambridge4/mockTest02";
+import { mockTest03 } from "../data/cambridge4/mockTest03";
+import { mockTest04 } from "../data/cambridge4/mockTest04";
 import type { MockTest, MockTestMetadata } from "../domain/examTypes";
 import { apiRequest, hasApiBaseUrl } from "./api/apiClient";
 

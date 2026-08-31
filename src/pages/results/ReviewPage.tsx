@@ -6,15 +6,15 @@ import {
   useParams,
   useSearchParams,
 } from "react-router";
-import { AssetImage } from "../components/exam/AssetImage";
-import { QuestionRenderer } from "../components/questions/QuestionRenderer";
+import { AssetImage } from "../../components/exam/AssetImage";
+import { QuestionRenderer } from "../../components/questions/QuestionRenderer";
 import {
   examModules,
   isSubmittedSession,
   isTestComplete,
-} from "../domain/testCompletion";
-import { useExamStore } from "../store/examStore";
-import { isExamModule, moduleTitle, useMockTest } from "./pageUtils";
+} from "../../domain/testCompletion";
+import { useExamStore } from "../../store/examStore";
+import { isExamModule, moduleTitle, useMockTest } from "../pageUtils";
 import styles from "./ReviewPage.module.css";
 
 export function ReviewPage() {

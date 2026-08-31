@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import { Link, Navigate, useParams } from "react-router";
-import { mockTest01MaterialReport } from "../data/mockTest01";
-import type { MockTest } from "../domain/examTypes";
+import { mockTest01MaterialReport } from "../../data/cambridge4/mockTest01";
+import type { MockTest } from "../../domain/examTypes";
 import {
   examModules,
   getAvailableModules,
   isSubmittedSession,
   isTestComplete,
-} from "../domain/testCompletion";
-import { useExamStore } from "../store/examStore";
-import { moduleTitle, useMockTest } from "./pageUtils";
+} from "../../domain/testCompletion";
+import { useExamStore } from "../../store/examStore";
+import { moduleTitle, useMockTest } from "../pageUtils";
 import styles from "./TestOverviewPage.module.css";
 
 function formatTestType(testType: string): string {

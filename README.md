@@ -68,9 +68,13 @@ Assets：
 ```text
 src/app/
 src/components/
-src/data/
+src/data/cambridge4/
 src/domain/
 src/pages/
+src/pages/admin/
+src/pages/exam/
+src/pages/library/
+src/pages/results/
 src/services/
 src/store/
 public/assets/
@@ -78,7 +82,11 @@ public/assets/
 
 关键职责：
 
-- `src/data/mockTest01.ts`：V1 内置 Mock Test 01 数据。
+- `src/data/cambridge4/mockTest01.ts`：V1 内置 Mock Test 01 数据。
+- `src/data/cambridge4/mockTest02.ts`：Cambridge IELTS 4 Test 2 seed 数据。
+- `src/data/cambridge4/mockTest03.ts`：Cambridge IELTS 4 Test 3 seed 数据。
+- `src/data/cambridge4/mockTest04.ts`：Cambridge IELTS 4 Test 4 seed 数据。
+- `src/data/cambridge4/mockTestFactory.ts`：source-page-backed 试卷数据工厂。
 - `src/domain/examTypes.ts`：考试核心类型。
 - `src/domain/grading.ts`：Reading / Listening deterministic grading。
 - `src/domain/bandConversion.ts`：raw score 到 band score 的换算。
@@ -86,8 +94,10 @@ public/assets/
 - `src/services/testRepository.ts`：试卷数据读取边界。
 - `src/services/sessionRepository.ts`：本地考试状态保存边界。
 - `src/store/examStore.ts`：Zustand 考试状态。
-- `src/pages/ObjectiveExamPage.tsx`：通用 Reading / Listening 客观题考试页面。
-- `src/pages/WritingExamPage.tsx`：Writing 页面。
+- `src/pages/library/`：总试卷库和单套卷模块选择页。
+- `src/pages/exam/`：考前说明页、Reading / Listening 客观题页面、Writing 页面。
+- `src/pages/results/`：单模块结果、Review、Final Result 页面。
+- `src/pages/admin/`：Test Management 页面。
 
 ## V1 可直接复用的部分
 
