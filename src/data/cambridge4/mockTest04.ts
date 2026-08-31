@@ -1,5 +1,10 @@
 import { makeImportedMockTest } from "./mockTestFactory";
 import { test4ReadingPassages } from "./readingPassages";
+import {
+  test4ListeningPartTexts,
+  test4ReadingQuestionTexts,
+  test4WritingPrompts,
+} from "./sourceQuestionTexts";
 
 export const mockTest04 = makeImportedMockTest({
   testNumber: 4,
@@ -11,16 +16,19 @@ export const mockTest04 = makeImportedMockTest({
     [86, 87],
     [88, 89],
   ],
+  listeningPartTexts: test4ListeningPartTexts,
   readingPageGroups: [
     [89, 90, 91, 92],
     [93, 94, 95, 96],
     [97, 98, 99, 100],
   ],
   readingPassages: test4ReadingPassages,
+  readingQuestionTexts: test4ReadingQuestionTexts,
   writingPages: {
     task1: [101],
     task2: [102],
   },
+  writingPrompts: test4WritingPrompts,
   listeningAnswers: [
     [1, ["College Dining Room"]],
     [2, ["office staff", "students"]],

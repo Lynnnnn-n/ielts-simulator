@@ -5,6 +5,7 @@ import type {
   Question,
   TestAsset,
 } from "../../domain/examTypes";
+import { test1ListeningPartTexts } from "./sourceQuestionTexts";
 
 function imagePage(page: number, description: string): TestAsset {
   return {
@@ -324,6 +325,9 @@ const readingQuestions: Question[] = [
 
 const listeningQuestions: Question[] = Array.from({ length: 40 }, (_, index) => {
   const number = index + 1;
+  const sectionStart = number === 1 || number === 11 || number === 21 || number === 31;
+  const sectionIndex = Math.floor((number - 1) / 10);
+
   return {
     id: `lq${number}`,
     number,
@@ -332,10 +336,10 @@ const listeningQuestions: Question[] = Array.from({ length: 40 }, (_, index) => 
         ? ("single-choice" as const)
         : ("note-completion" as const),
     instruction:
-      index === 0
-        ? "Listening Test 1 question sheet and section audio files are loaded."
+      sectionStart
+        ? test1ListeningPartTexts[sectionIndex]
         : undefined,
-    prompt: `Listening Question ${number} - see source page image.`,
+    prompt: `Answer for question ${number}`,
     options: number === 21 || number === 22 ? abcOptions : undefined,
     imageAssetIds:
       number === 1

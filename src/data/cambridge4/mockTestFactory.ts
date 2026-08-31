@@ -25,12 +25,15 @@ interface ImportedMockTestConfig {
     end: number;
   };
   listeningPageGroups: number[][];
+  listeningPartTexts?: string[];
   readingPageGroups: number[][];
   readingPassages?: ImportedReadingPassageConfig[];
+  readingQuestionTexts?: string[];
   writingPages: {
     task1: number[];
     task2: number[];
   };
+  writingPrompts?: Record<"task1" | "task2", string>;
   listeningAnswers: AnswerSpec[];
   readingAnswers: AnswerSpec[];
   sourceNotes?: string[];
@@ -50,18 +53,19 @@ function answerKey(prefix: string, spec: AnswerSpec): AnswerKeyEntry {
 function makeQuestions(
   prefix: string,
   questionImageAssetIds: Record<number, string[]> = {},
+  questionInstructions: Record<number, string> = {},
 ): Question[] {
   return Array.from({ length: 40 }, (_, index) => {
     const number = index + 1;
     const imageAssetIds = questionImageAssetIds[number];
+    const instruction = questionInstructions[number];
 
     return {
       id: `${prefix}q${number}`,
       number,
       type: "text" as const,
-      prompt: imageAssetIds
-        ? `Question ${number} - use the original question page below.`
-        : `Question ${number} - refer to the original question page for wording.`,
+      ...(instruction ? { instruction } : {}),
+      prompt: `Answer for question ${number}`,
       ...(imageAssetIds ? { imageAssetIds } : {}),
     };
   });
@@ -98,7 +102,7 @@ function makeListeningParts(config: ImportedMockTestConfig): ListeningPart[] {
     return {
       id: `listening-part-${index + 1}`,
       title: `SECTION ${index + 1} Questions ${start}-${end}`,
-      instruction: "Use the source page image for the original IELTS question text.",
+      instruction: config.listeningPartTexts?.[index],
       audioAssetId: `test${config.testNumber}-section-${index + 1}-audio`,
       imageAssetIds: pages.map((page) => `test${config.testNumber}-page-${page}`),
       questionIds: Array.from({ length: 10 }, (_, questionIndex) => {
@@ -130,7 +134,7 @@ function makeReadingPassages(config: ImportedMockTestConfig): ReadingPassage[] {
         importedPassage?.body.length
           ? importedPassage.body
           : [
-              "The original IELTS reading passage and question pages are displayed below as source images.",
+              "Reading passage text is unavailable.",
             ],
       imageAssetIds: importedPassage
         ? imagePages.map((page) => `test${config.testNumber}-page-${page}`)
@@ -145,22 +149,35 @@ function makeReadingPassages(config: ImportedMockTestConfig): ReadingPassage[] {
 function makeReadingQuestionImages(
   config: ImportedMockTestConfig,
 ): Record<number, string[]> {
-  const ranges = [
-    [1, 13],
-    [14, 26],
-    [27, 40],
-  ];
+  if (!config.readingPassages) {
+    return {};
+  }
+
+  return {};
+}
+
+function makeModuleQuestionInstructions(
+  groupTexts: string[] | undefined,
+): Record<number, string> {
+  if (!groupTexts) {
+    return {};
+  }
+
+  const starts = [1, 14, 27];
+  return Object.fromEntries(
+    groupTexts.map((text, index) => [starts[index] ?? 1, text]),
+  );
+}
+
+function makeListeningQuestionInstructions(
+  partTexts: string[] | undefined,
+): Record<number, string> {
+  if (!partTexts) {
+    return {};
+  }
 
   return Object.fromEntries(
-    (config.readingPassages ?? []).map((passage, index) => {
-      const [start] = ranges[index] ?? [1, 40];
-      return [
-        start,
-        passage.questionPages.map(
-          (page) => `test${config.testNumber}-page-${page}`,
-        ),
-      ];
-    }),
+    partTexts.map((text, index) => [index * 10 + 1, text]),
   );
 }
 
@@ -172,7 +189,8 @@ function makeWritingTask(
     id: taskId,
     title: taskId === "task1" ? "WRITING TASK 1" : "WRITING TASK 2",
     prompt:
-      "Refer to the source page image for the original IELTS writing task prompt.",
+      config.writingPrompts?.[taskId] ??
+      "Writing task prompt is unavailable in text form.",
     imageAssetIds: config.writingPages[taskId].map(
       (page) => `test${config.testNumber}-page-${page}`,
     ),
@@ -218,7 +236,7 @@ export function makeImportedMockTest(config: ImportedMockTestConfig): MockTest {
       listening: {
         available: true,
         notes: [
-          "Listening questions are shown through source page images.",
+          "Listening question wording is shown as extracted text, with source images kept as visual aids.",
           "Audio files are linked by section file name.",
         ],
         missing: [],
@@ -227,14 +245,14 @@ export function makeImportedMockTest(config: ImportedMockTestConfig): MockTest {
         available: true,
         notes: [
           "Reading passages are rendered as selectable text for highlighting.",
-          "Original question pages are kept as image assets where the printed layout matters.",
+          "Reading question wording is shown as extracted text, with images reserved for visual layout needs.",
           "Question inputs and answer keys are structured for grading.",
         ],
         missing: [],
       },
       writing: {
         available: true,
-        notes: ["Writing prompts and visuals are shown through source page images."],
+        notes: ["Writing prompts are shown as text, with source images kept for charts or visual prompts."],
         missing: [],
       },
     },
@@ -242,13 +260,21 @@ export function makeImportedMockTest(config: ImportedMockTestConfig): MockTest {
     listening: {
       durationSeconds: 40 * 60,
       parts: makeListeningParts(config),
-      questions: makeQuestions("l"),
+      questions: makeQuestions(
+        "l",
+        {},
+        makeListeningQuestionInstructions(config.listeningPartTexts),
+      ),
       answerKey: config.listeningAnswers.map((spec) => answerKey("l", spec)),
     },
     reading: {
       durationSeconds: 60 * 60,
       passages: makeReadingPassages(config),
-      questions: makeQuestions("r", makeReadingQuestionImages(config)),
+      questions: makeQuestions(
+        "r",
+        makeReadingQuestionImages(config),
+        makeModuleQuestionInstructions(config.readingQuestionTexts),
+      ),
       answerKey: config.readingAnswers.map((spec) => answerKey("r", spec)),
     },
     writing: {

@@ -57,6 +57,7 @@
 
 .passage p {
   line-height: 1.65;
+  white-space: pre-wrap;
 }
 
 @media (max-width: 760px) {
