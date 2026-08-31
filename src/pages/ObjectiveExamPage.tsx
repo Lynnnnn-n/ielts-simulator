@@ -70,7 +70,7 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
       }
 
       submitModule(test, module, status);
-      navigate("/");
+      navigate(`/test/${test.metadata.id}`);
     },
     [module, navigate, submitModule, test],
   );
@@ -148,7 +148,7 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
       activeSession.status === "TIME_EXPIRED" ||
       activeSession.status === "REVIEW"
     ) {
-      return <Navigate to="/" replace />;
+      return <Navigate to={`/test/${loadedTest.metadata.id}`} replace />;
     }
 
     return <Navigate to={`/test/${loadedTest.metadata.id}/${module}`} replace />;

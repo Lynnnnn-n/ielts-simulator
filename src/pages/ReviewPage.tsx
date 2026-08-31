@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useParams } from "react-router";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router";
+import { AssetImage } from "../components/exam/AssetImage";
 import { QuestionRenderer } from "../components/questions/QuestionRenderer";
 import {
   examModules,
@@ -12,6 +19,8 @@ import styles from "./ReviewPage.module.css";
 
 export function ReviewPage() {
   const params = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const module = isExamModule(params.module) ? params.module : null;
   const { test, isLoading } = useMockTest(params.testId);
   const restoreSession = useExamStore((state) => state.restoreSession);
@@ -25,7 +34,7 @@ export function ReviewPage() {
   );
 
   useEffect(() => {
-    if (params.testId && module && module !== "writing") {
+    if (params.testId && module) {
       examModules.forEach((item) => restoreSession(params.testId ?? "", item));
       setHasRestoredSessions(true);
     }
@@ -35,7 +44,6 @@ export function ReviewPage() {
     if (
       params.testId &&
       module &&
-      module !== "writing" &&
       session &&
       (session.status === "SUBMITTED" || session.status === "TIME_EXPIRED")
     ) {
@@ -43,7 +51,7 @@ export function ReviewPage() {
     }
   }, [enterReview, module, params.testId, session]);
 
-  if (!module || module === "writing") {
+  if (!module) {
     return <Navigate to="/" replace />;
   }
 
@@ -63,6 +71,15 @@ export function ReviewPage() {
 
   const activeSession = session;
   const testComplete = isTestComplete(loadedTest, sessions);
+  const returnToFinalResult = searchParams.get("from") === "final";
+  const testOverviewPath = `/test/${loadedTest.metadata.id}`;
+  const returnPath = returnToFinalResult
+    ? `/test/${loadedTest.metadata.id}/final-result`
+    : `/test/${loadedTest.metadata.id}/${module}/result`;
+
+  function returnToModuleSelection() {
+    navigate(testOverviewPath, { replace: true });
+  }
 
   if (
     !isSubmittedSession(activeSession)
@@ -71,7 +88,69 @@ export function ReviewPage() {
   }
 
   if (!testComplete) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={testOverviewPath} replace />;
+  }
+
+  if (module === "writing") {
+    return (
+      <main className={styles.page}>
+        <header className={styles.header}>
+          <div>
+            <h1>Writing Review</h1>
+            <p>Writing submissions are available for review and copying.</p>
+          </div>
+          <nav className={styles.headerActions}>
+            <button type="button" onClick={returnToModuleSelection}>
+              Back to module selection
+            </button>
+            <Link to={returnPath}>
+              {returnToFinalResult ? "Final Result" : "Result"}
+            </Link>
+          </nav>
+        </header>
+        <section className={styles.writingReview}>
+          {(["task1", "task2"] as const).map((taskId) => {
+            const task = loadedTest.writing[taskId];
+            const response = activeSession.writing[taskId];
+
+            if (!task) {
+              return null;
+            }
+
+            return (
+              <article className={styles.writingTask} key={taskId}>
+                <div className={styles.taskPrompt}>
+                  <h2>{task.title}</h2>
+                  <p>{task.prompt}</p>
+                  {task.imageAssetIds
+                    ?.map((assetId) =>
+                      loadedTest.assets.find((asset) => asset.id === assetId),
+                    )
+                    .filter((asset): asset is NonNullable<typeof asset> =>
+                      Boolean(asset),
+                    )
+                    .map((asset) => <AssetImage asset={asset} key={asset.id} />)}
+                </div>
+                <div className={styles.responseBlock}>
+                  <div>
+                    <h3>Your response</h3>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void navigator.clipboard.writeText(response)
+                      }
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <textarea readOnly value={response} />
+                </div>
+              </article>
+            );
+          })}
+        </section>
+      </main>
+    );
   }
 
   const moduleData =
@@ -87,9 +166,14 @@ export function ReviewPage() {
           <h1>{moduleTitle(module)} Review</h1>
           <p>Correct answers are available only in Review Mode.</p>
         </div>
-        <Link to={`/test/${loadedTest.metadata.id}/${module}/result`}>
-          Result
-        </Link>
+        <nav className={styles.headerActions}>
+          <button type="button" onClick={returnToModuleSelection}>
+            Back to module selection
+          </button>
+          <Link to={returnPath}>
+            {returnToFinalResult ? "Final Result" : "Result"}
+          </Link>
+        </nav>
       </header>
       <section className={styles.reviewList}>
         {moduleData.questions.length === 0 ? (

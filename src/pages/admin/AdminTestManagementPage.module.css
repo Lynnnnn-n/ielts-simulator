@@ -1,0 +1,72 @@
+.page {
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 32px 20px;
+}
+
+.backLink {
+  color: #111;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.header p {
+  margin: 0;
+}
+
+.notice,
+.tablePanel {
+  background: #fff;
+  border: 1px solid #333;
+  padding: 18px;
+}
+
+.notice h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.tablePanel {
+  overflow-x: auto;
+}
+
+.tablePanel table {
+  border-collapse: collapse;
+  min-width: 860px;
+  width: 100%;
+}
+
+.tablePanel th,
+.tablePanel td {
+  border-bottom: 1px solid #bbb;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tablePanel th {
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.tablePanel td:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tablePanel span {
+  border: 1px solid #777;
+  display: inline-block;
+  font-size: 13px;
+  padding: 5px 8px;
+}

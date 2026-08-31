@@ -72,7 +72,7 @@ export function ListeningExamPage() {
       }
 
       submitModule(test, "listening", status);
-      navigate("/");
+      navigate(`/test/${test.metadata.id}`);
     },
     [navigate, submitModule, test],
   );
@@ -136,7 +136,7 @@ export function ListeningExamPage() {
       activeSession.status === "TIME_EXPIRED" ||
       activeSession.status === "REVIEW"
     ) {
-      return <Navigate to="/" replace />;
+      return <Navigate to={`/test/${loadedTest.metadata.id}`} replace />;
     }
 
     return <Navigate to={`/test/${loadedTest.metadata.id}/listening`} replace />;

@@ -1,17 +1,19 @@
 import { Navigate, Route, Routes } from "react-router";
 import { ModuleIntroPage } from "../pages/ModuleIntroPage";
-import { ListeningExamPage } from "../pages/ListeningExamPage";
 import { FinalResultPage } from "../pages/FinalResultPage";
 import { ObjectiveExamPage } from "../pages/ObjectiveExamPage";
 import { ResultPage } from "../pages/ResultPage";
 import { ReviewPage } from "../pages/ReviewPage";
 import { TestSelectionPage } from "../pages/TestSelectionPage";
+import { TestOverviewPage } from "../pages/TestOverviewPage";
 import { WritingExamPage } from "../pages/WritingExamPage";
+import { AdminTestManagementPage } from "../pages/admin/AdminTestManagementPage";
 
 export function App() {
   return (
     <Routes>
       <Route path="/" element={<TestSelectionPage />} />
+      <Route path="/test/:testId" element={<TestOverviewPage />} />
       <Route path="/test/:testId/:module" element={<ModuleIntroPage />} />
       <Route
         path="/test/:testId/reading/exam"
@@ -19,7 +21,7 @@ export function App() {
       />
       <Route
         path="/test/:testId/listening/exam"
-        element={<ListeningExamPage />}
+        element={<ObjectiveExamPage module="listening" />}
       />
       <Route
         path="/test/:testId/writing/exam"
@@ -28,6 +30,7 @@ export function App() {
       <Route path="/test/:testId/:module/result" element={<ResultPage />} />
       <Route path="/test/:testId/:module/review" element={<ReviewPage />} />
       <Route path="/test/:testId/final-result" element={<FinalResultPage />} />
+      <Route path="/admin/tests" element={<AdminTestManagementPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -455,8 +455,20 @@ const listeningAnswerKey: AnswerKeyEntry[] = [
 export const mockTest01: MockTest = {
   metadata: {
     id: "mock-test-01",
+    slug: "cambridge-ielts-4-test-1",
     title: "Cambridge IELTS 4 - Test 1",
-    testType: "Academic",
+    testType: "academic",
+    description:
+      "Academic IELTS computer-delivered mock test using Cambridge IELTS 4 Test 1 material.",
+    status: "published",
+    modules: {
+      listening: true,
+      reading: true,
+      writing: true,
+    },
+    version: 1,
+    createdAt: "2026-08-31T00:00:00.000Z",
+    updatedAt: "2026-08-31T00:00:00.000Z",
     sourceNotes: [
       "Source: Cambridge IELTS 4 PDF supplied by the user.",
       "Only Test 1 is implemented in V1 at this stage.",

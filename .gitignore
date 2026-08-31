@@ -4,5 +4,11 @@ dist
 tmp
 .DS_Store
 *.log
+__pycache__
+*.pyc
 .env
 .env.*
+!.env.example
+!backend/.env.example
+backend/.venv
+backend/storage

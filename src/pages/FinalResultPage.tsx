@@ -102,11 +102,14 @@ export function FinalResultPage() {
           >
             Copy full result
           </button>
-          <Link to={`/test/${test.metadata.id}/reading/review`}>
+          <Link to={`/test/${test.metadata.id}/reading/review?from=final`}>
             Review Reading
           </Link>
-          <Link to={`/test/${test.metadata.id}/listening/review`}>
+          <Link to={`/test/${test.metadata.id}/listening/review?from=final`}>
             Review Listening
+          </Link>
+          <Link to={`/test/${test.metadata.id}/writing/review?from=final`}>
+            Review Writing
           </Link>
           <button type="button" onClick={handleResetTest}>
             Reset test

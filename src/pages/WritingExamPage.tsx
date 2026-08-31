@@ -38,7 +38,7 @@ export function WritingExamPage() {
       }
 
       submitModule(test, "writing", status);
-      navigate("/");
+      navigate(`/test/${test.metadata.id}`);
     },
     [navigate, submitModule, test],
   );
@@ -69,7 +69,7 @@ export function WritingExamPage() {
       activeSession.status === "TIME_EXPIRED" ||
       activeSession.status === "REVIEW"
     ) {
-      return <Navigate to="/" replace />;
+      return <Navigate to={`/test/${loadedTest.metadata.id}`} replace />;
     }
 
     return <Navigate to={`/test/${loadedTest.metadata.id}/writing`} replace />;

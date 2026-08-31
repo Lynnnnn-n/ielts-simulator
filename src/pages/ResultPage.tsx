@@ -57,7 +57,7 @@ export function ResultPage() {
   }
 
   if (!testComplete) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={`/test/${loadedTest.metadata.id}`} replace />;
   }
 
   const result = activeSession.objectiveResult;
@@ -106,10 +106,13 @@ export function ResultPage() {
                 Copy Task 2
               </button>
             </section>
+            <Link to={`/test/${loadedTest.metadata.id}/writing/review`}>
+              Review writing
+            </Link>
           </div>
         ) : null}
-        <Link className={styles.backLink} to="/">
-          Back to tests
+        <Link className={styles.backLink} to={`/test/${loadedTest.metadata.id}`}>
+          Back to test
         </Link>
       </section>
     </main>

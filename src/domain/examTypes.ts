@@ -28,8 +28,19 @@ export interface MaterialStatus {
 
 export interface MockTestMetadata {
   id: string;
+  slug: string;
   title: string;
-  testType: "Academic" | "General Training";
+  testType: "academic" | "general-training" | "Academic" | "General Training";
+  description?: string;
+  status: "draft" | "published" | "archived";
+  modules: {
+    listening: boolean;
+    reading: boolean;
+    writing: boolean;
+  };
+  version: number;
+  createdAt: string;
+  updatedAt: string;
   sourceNotes: string[];
 }
 
@@ -93,6 +104,7 @@ export interface ReadingPassage {
   title: string;
   subtitle?: string;
   body: string[];
+  contentBlocks?: ContentBlock[];
   questionIds: string[];
   imageAssetIds?: string[];
 }
@@ -128,6 +140,29 @@ export interface DataTable {
   rows: string[][];
 }
 
+export interface TextBlock {
+  id: string;
+  type: "text";
+  content: string;
+}
+
+export interface ImageBlock {
+  id: string;
+  type: "image";
+  assetId: string;
+  alt?: string;
+  caption?: string;
+}
+
+export interface TableBlock {
+  id: string;
+  type: "table";
+  rows: string[][];
+  caption?: string;
+}
+
+export type ContentBlock = TextBlock | ImageBlock | TableBlock;
+
 export interface WritingTask {
   id: "task1" | "task2";
   title: string;
@@ -147,6 +182,11 @@ export interface TestAsset {
   id: string;
   type: "audio" | "image" | "pdf" | "document";
   path: string;
+  assetUrl?: string;
+  fileName?: string;
+  mimeType?: string;
+  storageKey?: string;
+  size?: number;
   description: string;
 }
 

@@ -82,8 +82,8 @@ export function ModuleIntroPage() {
 
   return (
     <main className={styles.page}>
-      <Link className={styles.backLink} to="/">
-        Back to tests
+      <Link className={styles.backLink} to={`/test/${test.metadata.id}`}>
+        Back to test
       </Link>
       <section className={styles.intro}>
         <h1>

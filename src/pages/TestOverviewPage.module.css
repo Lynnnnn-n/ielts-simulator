@@ -1,0 +1,134 @@
+.page {
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 32px 20px;
+}
+
+.backLink {
+  color: #111;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.header {
+  align-items: start;
+  background: #fff;
+  border: 1px solid #333;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.header h1 {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.header p {
+  margin: 0;
+}
+
+.header strong {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.moduleGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.moduleCard,
+.finalSummary,
+.report {
+  background: #fff;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.moduleCard,
+.finalSummary {
+  display: grid;
+  gap: 12px;
+}
+
+.moduleCard h2,
+.finalSummary h2 {
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+.moduleCard p,
+.finalSummary p {
+  margin: 0;
+}
+
+.moduleActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.moduleActions a,
+.moduleActions span,
+.finalSummary button,
+.finalSummary a {
+  border: 1px solid #333;
+  background: #fff;
+  color: #111;
+  display: inline-block;
+  font: inherit;
+  min-width: 86px;
+  padding: 7px 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.moduleActions span {
+  border-color: #aaa;
+  color: #777;
+}
+
+.scoreLine {
+  border-top: 1px solid #ccc;
+  font-size: 14px;
+  padding-top: 10px;
+}
+
+.finalSummary {
+  display: block;
+  margin-top: 20px;
+}
+
+.finalSummary a,
+.finalSummary button {
+  margin-right: 8px;
+  margin-top: 12px;
+}
+
+.report h2 {
+  font-size: 22px;
+}
+
+.report h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    display: grid;
+  }
+
+  .header strong {
+    white-space: normal;
+  }
+
+  .moduleGrid {
+    grid-template-columns: 1fr;
+  }
+}
