@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ListeningPlaybackState } from "../../domain/examTypes";
+import { resolvePublicAssetPath } from "../../utils/assetPath";
 import styles from "./RestrictedAudioPlayer.module.css";
 
 interface RestrictedAudioPlayerProps {
@@ -24,6 +25,7 @@ export function RestrictedAudioPlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [volume, setVolume] = useState(1);
+  const resolvedSrc = resolvePublicAssetPath(src);
   const completed = playbackState.completedPartIds.includes(partId);
   const otherPartIsPlaying =
     Boolean(playbackState.activePartId) && playbackState.activePartId !== partId;
@@ -63,7 +65,7 @@ export function RestrictedAudioPlayer({
     }
   }
 
-  if (!src) {
+  if (!resolvedSrc) {
     return (
       <div className={styles.missing}>
         Listening audio asset is missing for this section.
@@ -75,7 +77,7 @@ export function RestrictedAudioPlayer({
     <div className={styles.player}>
       <audio
         ref={audioRef}
-        src={src}
+        src={resolvedSrc}
         preload="metadata"
         onError={() => setHasError(true)}
         onEnded={() => {
@@ -108,7 +110,7 @@ export function RestrictedAudioPlayer({
         />
       </label>
       {hasError ? (
-        <span className={styles.error}>Audio file not found: {src}</span>
+        <span className={styles.error}>Audio file not found: {resolvedSrc}</span>
       ) : null}
       {otherPartIsPlaying ? (
         <span className={styles.status}>Another section is playing.</span>
