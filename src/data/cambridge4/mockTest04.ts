@@ -1,4 +1,5 @@
 import { makeImportedMockTest } from "./mockTestFactory";
+import { test4ReadingPassages } from "./readingPassages";
 
 export const mockTest04 = makeImportedMockTest({
   testNumber: 4,
@@ -11,10 +12,11 @@ export const mockTest04 = makeImportedMockTest({
     [88, 89],
   ],
   readingPageGroups: [
-    [90, 91, 92, 93],
-    [94, 95, 96],
+    [89, 90, 91, 92],
+    [93, 94, 95, 96],
     [97, 98, 99, 100],
   ],
+  readingPassages: test4ReadingPassages,
   writingPages: {
     task1: [101],
     task2: [102],

@@ -10,6 +10,13 @@ import type {
 
 export type AnswerSpec = [number, string[]] | [number, string[], string];
 
+export interface ImportedReadingPassageConfig {
+  articleTitle: string;
+  body: string[];
+  questionPages: number[];
+  imagePages?: number[];
+}
+
 interface ImportedMockTestConfig {
   testNumber: 2 | 3 | 4;
   title: string;
@@ -19,6 +26,7 @@ interface ImportedMockTestConfig {
   };
   listeningPageGroups: number[][];
   readingPageGroups: number[][];
+  readingPassages?: ImportedReadingPassageConfig[];
   writingPages: {
     task1: number[];
     task2: number[];
@@ -39,15 +47,22 @@ function answerKey(prefix: string, spec: AnswerSpec): AnswerKeyEntry {
   };
 }
 
-function makeQuestions(prefix: string): Question[] {
+function makeQuestions(
+  prefix: string,
+  questionImageAssetIds: Record<number, string[]> = {},
+): Question[] {
   return Array.from({ length: 40 }, (_, index) => {
     const number = index + 1;
+    const imageAssetIds = questionImageAssetIds[number];
 
     return {
       id: `${prefix}q${number}`,
       number,
       type: "text" as const,
-      prompt: `Question ${number} - refer to the source page images.`,
+      prompt: imageAssetIds
+        ? `Question ${number} - use the original question page below.`
+        : `Question ${number} - refer to the original question page for wording.`,
+      ...(imageAssetIds ? { imageAssetIds } : {}),
     };
   });
 }
@@ -102,19 +117,51 @@ function makeReadingPassages(config: ImportedMockTestConfig): ReadingPassage[] {
     ];
     const [start, end] = ranges[index] ?? [1, 40];
 
+    const importedPassage = config.readingPassages?.[index];
+    const imagePages = importedPassage?.imagePages ?? [];
+
     return {
       id: `reading-passage-${index + 1}`,
       title: `READING PASSAGE ${index + 1}`,
-      subtitle: `Questions ${start}-${end}`,
-      body: [
-        "The original IELTS reading passage and question pages are displayed below as source images.",
-      ],
-      imageAssetIds: pages.map((page) => `test${config.testNumber}-page-${page}`),
+      subtitle: importedPassage?.articleTitle
+        ? `${importedPassage.articleTitle} · Questions ${start}-${end}`
+        : `Questions ${start}-${end}`,
+      body:
+        importedPassage?.body.length
+          ? importedPassage.body
+          : [
+              "The original IELTS reading passage and question pages are displayed below as source images.",
+            ],
+      imageAssetIds: importedPassage
+        ? imagePages.map((page) => `test${config.testNumber}-page-${page}`)
+        : pages.map((page) => `test${config.testNumber}-page-${page}`),
       questionIds: Array.from({ length: end - start + 1 }, (_, questionIndex) => {
         return `rq${start + questionIndex}`;
       }),
     };
   });
+}
+
+function makeReadingQuestionImages(
+  config: ImportedMockTestConfig,
+): Record<number, string[]> {
+  const ranges = [
+    [1, 13],
+    [14, 26],
+    [27, 40],
+  ];
+
+  return Object.fromEntries(
+    (config.readingPassages ?? []).map((passage, index) => {
+      const [start] = ranges[index] ?? [1, 40];
+      return [
+        start,
+        passage.questionPages.map(
+          (page) => `test${config.testNumber}-page-${page}`,
+        ),
+      ];
+    }),
+  );
 }
 
 function makeWritingTask(
@@ -179,7 +226,8 @@ export function makeImportedMockTest(config: ImportedMockTestConfig): MockTest {
       reading: {
         available: true,
         notes: [
-          "Reading passages and questions are shown through source page images.",
+          "Reading passages are rendered as selectable text for highlighting.",
+          "Original question pages are kept as image assets where the printed layout matters.",
           "Question inputs and answer keys are structured for grading.",
         ],
         missing: [],
@@ -200,7 +248,7 @@ export function makeImportedMockTest(config: ImportedMockTestConfig): MockTest {
     reading: {
       durationSeconds: 60 * 60,
       passages: makeReadingPassages(config),
-      questions: makeQuestions("r"),
+      questions: makeQuestions("r", makeReadingQuestionImages(config)),
       answerKey: config.readingAnswers.map((spec) => answerKey("r", spec)),
     },
     writing: {
