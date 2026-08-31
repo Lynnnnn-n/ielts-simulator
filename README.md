@@ -265,6 +265,42 @@ VITE_ADMIN_TOKEN=change-me-for-local-development
 
 如果没有配置 `VITE_API_BASE_URL`，前端会继续使用本地内置试卷数据。
 
+## GitHub Pages Deployment
+
+这个仓库包含 `backend/`，但 GitHub Pages 只能托管静态前端文件，不能运行 FastAPI 或 PostgreSQL。
+
+当前项目可以部署一个静态前端版到 GitHub Pages。前端会使用本地内置 mock test 数据；需要后端数据库能力时，后端要单独部署到支持 Python/PostgreSQL 的平台。
+
+已配置：
+
+- Vite GitHub Pages base path：`/ielts-simulator/`
+- React Router basename：使用 `import.meta.env.BASE_URL`
+- `gh-pages` 部署依赖
+- `predeploy`：构建 GitHub Pages 版本，并生成 `404.html` 支持前端路由刷新
+- `deploy`：发布 `dist/` 到 `gh-pages` 分支
+
+部署命令：
+
+```bash
+pnpm deploy
+```
+
+GitHub Pages 网页端设置：
+
+1. 打开 GitHub 仓库 `Lynnnnn-n/ielts-simulator`。
+2. 进入 `Settings`。
+3. 打开 `Pages`。
+4. `Build and deployment` 选择 `Deploy from a branch`。
+5. Branch 选择 `gh-pages`。
+6. Folder 选择 `/ (root)`。
+7. 保存后等待 GitHub Pages 构建完成。
+
+最终访问地址格式：
+
+```text
+https://lynnnnn-n.github.io/ielts-simulator/
+```
+
 ## Database Setup
 
 V2 使用 PostgreSQL。创建数据库后运行：
