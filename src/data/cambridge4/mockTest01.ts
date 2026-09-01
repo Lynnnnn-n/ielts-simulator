@@ -5,7 +5,7 @@ import type {
   Question,
   TestAsset,
 } from "../../domain/examTypes";
-import { test1ListeningPartTexts } from "./sourceQuestionTexts";
+import { test1ListeningPartTextsBySection } from "./listeningTextOverrides";
 
 function imagePage(page: number, description: string): TestAsset {
   return {
@@ -337,7 +337,7 @@ const listeningQuestions: Question[] = Array.from({ length: 40 }, (_, index) => 
         : ("note-completion" as const),
     instruction:
       sectionStart
-        ? test1ListeningPartTexts[sectionIndex]
+        ? test1ListeningPartTextsBySection[sectionIndex]
         : undefined,
     prompt: "",
     options: number === 21 || number === 22 ? abcOptions : undefined,
@@ -509,6 +509,7 @@ export const mockTest01: MockTest = {
       {
         id: "listening-part-1",
         title: "SECTION 1 Questions 1-10",
+        instruction: test1ListeningPartTextsBySection[0],
         audioAssetId: "test1-section-1-audio",
         imageAssetIds: ["test1-page-11", "test1-page-12"],
         questionIds: Array.from({ length: 10 }, (_, index) => `lq${index + 1}`),
@@ -516,6 +517,7 @@ export const mockTest01: MockTest = {
       {
         id: "listening-part-2",
         title: "SECTION 2 Questions 11-20",
+        instruction: test1ListeningPartTextsBySection[1],
         audioAssetId: "test1-section-2-audio",
         imageAssetIds: ["test1-page-13", "test1-page-14"],
         questionIds: Array.from({ length: 10 }, (_, index) => `lq${index + 11}`),
@@ -523,6 +525,7 @@ export const mockTest01: MockTest = {
       {
         id: "listening-part-3",
         title: "SECTION 3 Questions 21-30",
+        instruction: test1ListeningPartTextsBySection[2],
         audioAssetId: "test1-section-3-audio",
         imageAssetIds: ["test1-page-15", "test1-page-16", "test1-page-17"],
         questionIds: Array.from({ length: 10 }, (_, index) => `lq${index + 21}`),
@@ -530,6 +533,7 @@ export const mockTest01: MockTest = {
       {
         id: "listening-part-4",
         title: "SECTION 4 Questions 31-40",
+        instruction: test1ListeningPartTextsBySection[3],
         audioAssetId: "test1-section-4-audio",
         imageAssetIds: ["test1-page-18"],
         questionIds: Array.from({ length: 10 }, (_, index) => `lq${index + 31}`),

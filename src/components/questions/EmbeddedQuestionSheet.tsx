@@ -215,7 +215,7 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
   "mock-test-01:listening": [
     {
       start: 5,
-      end: 8,
+      end: 10,
       title: "WEEKEND TRIPS",
       headers: ["Place", "Date", "Number of seats", "Optional extra"],
       rows: [
@@ -224,6 +224,7 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
         ["{7}", "3rd March", "18", "S.S. Great Britain"],
         ["Salisbury", "18th March", "50", "Stonehenge"],
         ["Bath", "23rd March", "16", "{8}"],
+        ["For further information", "Read the {9}", "or see Social Assistant", "Jane {10}"],
       ],
     },
   ],
@@ -253,14 +254,28 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
   ],
   "mock-test-03:listening": [
     {
+      start: 1,
+      end: 4,
+      title: "Accommodation Request Form",
+      headers: ["Field", "Details"],
+      rows: [
+        ["Name", "Sara Lim"],
+        ["Age", "23"],
+        ["Length of time in Australia", "{1}"],
+        ["Present address", "Flat 1, 539, {2} Road, Canterbury 2036"],
+        ["Present course", "{3} English"],
+        ["Accommodation required from", "{4}, 7th September"],
+      ],
+    },
+    {
       start: 15,
       end: 20,
       title: "Festival performances",
-      headers: ["Type of performance", "Where", "Highlights", "Type of audience"],
+      headers: ["", "Where", "Type of performance", "Highlights", "Type of audience"],
       rows: [
-        ["Circus Romano", "{15}", "Clowns, acrobats, music and {16}", ""],
-        ["Circus Electrica", "{17}", "Dancers, magicians and aerial displays", "{18}"],
-        ["Mekong Water Puppets", "{19}", "Seeing the puppeteers at the end", "{20}"],
+        ["Circus Romano", "", "Clowns and acrobats", "Music and {15}", "{16}"],
+        ["Circus Electrica", "{17}", "Dancers and magicians", "Aerial displays", "{18}"],
+        ["Mekong Water Puppets", "{19}", "Puppets", "Seeing the puppeteers at the end", "{20}"],
       ],
     },
     {
@@ -269,7 +284,7 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
       title: "CHOICE OF SITE",
       headers: ["", "Site One", "Site Two", "Site Three"],
       rows: [
-        ["Location", "City centre near {33}", "Outskirts near park", "Out of town near the Faculty of {34}"],
+        ["Location", "City centre near Faculty of {33}", "Outskirts near park", "Out of town near the {34}"],
         ["Advantages and/or disadvantages", "Problems with {35} and traffic", "Close to halls of residence, so more {36}", "Access to living quarters. Larger site. {37}"],
       ],
     },
@@ -820,7 +835,11 @@ export function EmbeddedQuestionSheet({
     const isTableGroup = Boolean(tablePlan);
 
     return (
-      <article className={styles.questionCard} id={item.questionId} key={item.questionId}>
+      <article
+        className={styles.questionCard}
+        id={isTableGroup ? `${item.questionId}-group` : item.questionId}
+        key={item.questionId}
+      >
         <div className={styles.questionHeader}>
           <span className={styles.numberBadge}>{item.number}</span>
           <span>{module === "listening" ? "Listening" : "Reading"}</span>
