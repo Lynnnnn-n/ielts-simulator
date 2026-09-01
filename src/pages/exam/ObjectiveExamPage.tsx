@@ -227,6 +227,7 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
         <EmbeddedQuestionSheet
           answers={activeSession.answers}
           key={passage.id}
+          testId={loadedTest.metadata.id}
           module="reading"
           questionIds={passage.questionIds}
           questions={questions}

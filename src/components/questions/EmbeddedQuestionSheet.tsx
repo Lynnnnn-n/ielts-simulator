@@ -4,6 +4,7 @@ import styles from "./EmbeddedQuestionSheet.module.css";
 
 interface EmbeddedQuestionSheetProps {
   text: string;
+  testId: string;
   module: ExamModule;
   questionIds: string[];
   questions: Question[];
@@ -27,13 +28,169 @@ interface ChoiceOption {
   text: string;
 }
 
+interface ManualChoicePlan {
+  start: number;
+  end: number;
+  style: "choice-list" | "option-bank" | "letter-row";
+  options: ChoiceOption[];
+}
+
 const blankPattern = /(?:\. ?){4,}|_{4,}|…+/g;
 const optionStartPattern = /^([A-Ha-h])(?:[.)])?(?:\s+(.+))?$/;
+const removableOptionLinePattern =
+  /^([A-Ha-h]|i|ii|iii|iv|v|vi|vii|viii)(?:[.)])?\s+(.+)$/;
+const optionBankHeadingPattern = /^(?:List of|Possible reasons|Problems)$/i;
 const sectionHeadingPattern =
   /^(?:SECTION \d|READING PASSAGE \d|Questions? \d|Test \d|Part \d)/i;
 
 function getQuestionNumber(questionId: string): number {
   return Number(questionId.replace(/\D/g, ""));
+}
+
+function letters(labels: string[]): ChoiceOption[] {
+  return labels.map((label) => ({
+    label,
+    text: label,
+  }));
+}
+
+function option(label: string, text: string): ChoiceOption {
+  return { label, text };
+}
+
+const abc = letters(["A", "B", "C"]);
+const abcd = letters(["A", "B", "C", "D"]);
+const ae = letters(["A", "B", "C", "D", "E"]);
+const af = letters(["A", "B", "C", "D", "E", "F"]);
+const ag = letters(["A", "B", "C", "D", "E", "F", "G"]);
+const yesNoNotGiven = ["YES", "NO", "NOT GIVEN"].map((label) => option(label, label));
+const trueFalseNotGiven = ["TRUE", "FALSE", "NOT GIVEN"].map((label) =>
+  option(label, label),
+);
+
+const manualChoicePlans: Record<string, ManualChoicePlan[]> = {
+  "mock-test-02:listening": [
+    { start: 1, end: 5, style: "choice-list", options: abc },
+    { start: 11, end: 20, style: "choice-list", options: abc },
+    { start: 25, end: 26, style: "option-bank", options: ae },
+    { start: 31, end: 32, style: "choice-list", options: abc },
+    { start: 39, end: 40, style: "option-bank", options: af },
+  ],
+  "mock-test-03:listening": [
+    { start: 5, end: 7, style: "choice-list", options: abc },
+    { start: 11, end: 14, style: "choice-list", options: abc },
+    { start: 21, end: 30, style: "choice-list", options: abc },
+    { start: 38, end: 38, style: "option-bank", options: ag },
+    { start: 39, end: 39, style: "choice-list", options: abc },
+    { start: 40, end: 40, style: "option-bank", options: ae },
+  ],
+  "mock-test-04:listening": [
+    { start: 11, end: 15, style: "choice-list", options: abc },
+    {
+      start: 27,
+      end: 30,
+      style: "option-bank",
+      options: [
+        option("A", "too messy"),
+        option("B", "too boring"),
+        option("C", "too difficult"),
+        option("D", "too much equipment"),
+        option("E", "too long"),
+        option("F", "too easy"),
+        option("G", "too noisy"),
+        option("H", "too dangerous"),
+      ],
+    },
+    { start: 35, end: 38, style: "choice-list", options: abc },
+    { start: 39, end: 40, style: "option-bank", options: ae },
+  ],
+  "mock-test-02:reading": [
+    {
+      start: 5,
+      end: 9,
+      style: "option-bank",
+      options: [
+        option("A", "Michael Krauss"),
+        option("B", "Salikoko Mufwene"),
+        option("C", "Nicholas Ostler"),
+        option("D", "Mark Pagel"),
+        option("E", "Doug Whalen"),
+      ],
+    },
+    { start: 10, end: 13, style: "choice-list", options: yesNoNotGiven },
+    { start: 14, end: 15, style: "choice-list", options: abcd },
+    { start: 16, end: 23, style: "choice-list", options: yesNoNotGiven },
+    { start: 27, end: 32, style: "letter-row", options: letters(["A", "B", "C", "D", "E", "F", "G", "H", "I"]) },
+    { start: 33, end: 35, style: "option-bank", options: af },
+    {
+      start: 36,
+      end: 40,
+      style: "option-bank",
+      options: [
+        option("A", "There is a link between a specific substance in the brain and playing."),
+        option("B", "Play provides input concerning physical surroundings."),
+        option("C", "Varieties of play can be matched to different stages of evolutionary history."),
+        option("D", "There is a tendency for mammals with smaller brains to play less."),
+        option("E", "Play is not a form of fitness training for the future."),
+        option("F", "Some species of larger-brained birds engage in play."),
+        option("G", "A wide range of activities are combined during play."),
+        option("H", "Play is a method of teaching survival techniques."),
+      ],
+    },
+  ],
+  "mock-test-03:reading": [
+    { start: 1, end: 4, style: "choice-list", options: abcd },
+    { start: 9, end: 12, style: "choice-list", options: yesNoNotGiven },
+    { start: 13, end: 13, style: "choice-list", options: abcd },
+    {
+      start: 14,
+      end: 17,
+      style: "option-bank",
+      options: [
+        option("i", "Causes of volcanic eruption"),
+        option("ii", "Efforts to predict volcanic eruption"),
+        option("iii", "Volcanoes and the features of our planet"),
+        option("iv", "Different types of volcanic eruption"),
+        option("v", "International relief efforts"),
+        option("vi", "The unpredictability of volcanic eruptions"),
+      ],
+    },
+    { start: 27, end: 31, style: "letter-row", options: ag },
+  ],
+  "mock-test-04:reading": [
+    { start: 1, end: 6, style: "choice-list", options: trueFalseNotGiven },
+    { start: 11, end: 13, style: "choice-list", options: abcd },
+    { start: 14, end: 19, style: "choice-list", options: yesNoNotGiven },
+    { start: 20, end: 21, style: "option-bank", options: ae },
+    { start: 22, end: 23, style: "option-bank", options: ae },
+    {
+      start: 28,
+      end: 31,
+      style: "option-bank",
+      options: [
+        option("i", "The connection between health-care and other human rights"),
+        option("ii", "The development of market-based health systems"),
+        option("iii", "The role of the state in health-care"),
+        option("iv", "A problem shared by every economically developed country"),
+        option("v", "The impact of recent change"),
+        option("vi", "The views of the medical establishment"),
+        option("vii", "The end of an illusion"),
+        option("viii", "Sustainable economic development"),
+      ],
+    },
+    { start: 32, end: 35, style: "choice-list", options: abc },
+    { start: 36, end: 40, style: "choice-list", options: yesNoNotGiven },
+  ],
+};
+
+function getManualChoicePlan(
+  testId: string,
+  module: ExamModule,
+  number: number,
+) {
+  return manualChoicePlans[`${testId}:${module}`]?.find(
+    (plan) => number >= plan.start && number <= plan.end,
+  );
 }
 
 function getLineQuestionNumber(line: string) {
@@ -205,7 +362,12 @@ function withoutOptionLines(lines: string[]) {
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index].trim();
-    const match = line.match(optionStartPattern);
+    const match =
+      line.match(optionStartPattern) ?? line.match(removableOptionLinePattern);
+
+    if (optionBankHeadingPattern.test(line)) {
+      continue;
+    }
 
     if (!match) {
       filteredLines.push(lines[index]);
@@ -213,15 +375,21 @@ function withoutOptionLines(lines: string[]) {
     }
 
     const hasInlineText = Boolean(match[2]?.trim());
-    const nextLine = lines[index + 1]?.trim() ?? "";
-    const usesNextLineAsText =
-      !hasInlineText &&
-      nextLine &&
-      !optionStartPattern.test(nextLine) &&
-      !sectionHeadingPattern.test(nextLine) &&
-      getLineQuestionNumber(nextLine) === null;
 
-    if (usesNextLineAsText) {
+    while (index + 1 < lines.length) {
+      const nextLine = lines[index + 1].trim();
+      const nextLineIsContinuation =
+        nextLine &&
+        !optionStartPattern.test(nextLine) &&
+        !removableOptionLinePattern.test(nextLine) &&
+        !optionBankHeadingPattern.test(nextLine) &&
+        !sectionHeadingPattern.test(nextLine) &&
+        getLineQuestionNumber(nextLine) === null;
+
+      if (!nextLineIsContinuation || (!hasInlineText && index + 1 >= lines.length)) {
+        break;
+      }
+
       index += 1;
     }
   }
@@ -267,6 +435,7 @@ function renderLineWithInput(
 
 export function EmbeddedQuestionSheet({
   text,
+  testId,
   module,
   questionIds,
   questions,
@@ -293,18 +462,28 @@ export function EmbeddedQuestionSheet({
   }
 
   function renderQuestion(item: QuestionItem) {
-    const choices = optionChoices(item.bodyLines);
+    const manualPlan = getManualChoicePlan(testId, module, item.number);
+    const choices = manualPlan?.options ?? optionChoices(item.bodyLines);
     const bodyHasBlank = hasBlank(item.bodyLines);
-    const usesSharedChoices = item.sharedChoices.length >= 2 && bodyHasBlank;
-    const shouldShowChoices = choices.length >= 2 && !bodyHasBlank;
+    const usesSharedChoices =
+      manualPlan?.style === "option-bank" ||
+      (item.sharedChoices.length >= 2 && bodyHasBlank);
+    const usesLetterRow = manualPlan?.style === "letter-row";
+    const shouldShowChoices =
+      manualPlan?.style === "choice-list" || (choices.length >= 2 && !bodyHasBlank);
     const shouldShowFallbackInput =
-      !usesSharedChoices && !shouldShowChoices && !bodyHasBlank;
+      !usesSharedChoices && !usesLetterRow && !shouldShowChoices && !bodyHasBlank;
     const visibleIntroLines = item.showSharedChoices
       ? withoutOptionLines(item.introLines)
       : item.introLines;
-    const visibleBodyLines = shouldShowChoices
+    const visibleBodyLines = shouldShowChoices || usesSharedChoices
       ? withoutOptionLines(item.bodyLines)
       : item.bodyLines;
+    const bankChoices = manualPlan?.options ?? item.sharedChoices;
+    const showOptionBank =
+      manualPlan?.style === "option-bank"
+        ? item.number === manualPlan.start
+        : item.showSharedChoices;
 
     return (
       <article className={styles.questionCard} id={item.questionId} key={item.questionId}>
@@ -321,9 +500,9 @@ export function EmbeddedQuestionSheet({
             ))}
           </div>
         ) : null}
-        {item.showSharedChoices ? (
+        {showOptionBank ? (
           <div className={styles.optionBank}>
-            {item.sharedChoices.map((choice) => (
+            {bankChoices.map((choice) => (
               <p className={styles.optionBankLine} key={`${item.questionId}:bank:${choice.label}`}>
                 <span className={styles.choiceLabel}>{choice.label}</span>
                 <span>{choice.text}</span>
@@ -383,9 +562,9 @@ export function EmbeddedQuestionSheet({
               ))}
             </div>
           ) : null}
-          {usesSharedChoices ? (
+          {usesSharedChoices || usesLetterRow ? (
             <div className={styles.letterChoiceGroup}>
-              {item.sharedChoices.map((choice) => (
+              {(usesLetterRow ? choices : bankChoices).map((choice) => (
                 <label
                   className={styles.letterChoice}
                   key={`${item.questionId}:letter:${choice.label}`}
