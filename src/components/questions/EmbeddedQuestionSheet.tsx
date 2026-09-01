@@ -605,11 +605,11 @@ export function EmbeddedQuestionSheet({
         ? extractedChoices
         : manualPlan?.options ?? extractedBodyChoices;
     const bodyHasBlank = hasBlank(item.bodyLines);
-    const usesSharedChoices =
-      manualPlan?.style === "option-bank";
+    const usesSharedChoices = manualPlan?.style === "option-bank";
     const usesLetterRow = manualPlan?.style === "letter-row";
     const shouldShowChoices =
-      manualPlan?.style === "choice-list" || (choices.length >= 2 && !bodyHasBlank);
+      manualPlan?.style === "choice-list" ||
+      (module !== "listening" && choices.length >= 2 && !bodyHasBlank);
     const shouldShowFallbackInput =
       !usesSharedChoices && !usesLetterRow && !shouldShowChoices && !bodyHasBlank;
     const visibleIntroLines = item.showSharedChoices
