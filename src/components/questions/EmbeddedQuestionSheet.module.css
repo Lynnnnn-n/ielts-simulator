@@ -72,6 +72,24 @@
   font-size: 1rem;
 }
 
+.optionBank {
+  border: 1px solid #b7b7b7;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+}
+
+.optionBankLine {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  line-height: 1.45;
+  margin: 0 0 6px;
+}
+
+.optionBankLine:last-child {
+  margin-bottom: 0;
+}
+
 .answerInput {
   border: 1px solid #111;
   border-radius: 0;
@@ -104,6 +122,10 @@
   max-width: 760px;
 }
 
+.fullChoiceGroup {
+  margin-top: 8px;
+}
+
 .choiceOption input {
   flex: 0 0 auto;
   margin-top: 4px;
@@ -116,4 +138,28 @@
 
 .fallbackAnswer {
   margin-top: 8px;
+}
+
+.letterChoiceGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.letterChoice {
+  align-items: center;
+  border: 1px solid #777;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  gap: 5px;
+  justify-content: center;
+  min-height: 30px;
+  min-width: 42px;
+  padding: 3px 8px;
+}
+
+.letterChoice input {
+  margin: 0;
 }

@@ -18,10 +18,17 @@ interface QuestionItem {
   number: number;
   introLines: string[];
   bodyLines: string[];
+  sharedChoices: ChoiceOption[];
+  showSharedChoices: boolean;
+}
+
+interface ChoiceOption {
+  label: string;
+  text: string;
 }
 
 const blankPattern = /(?:\. ?){4,}|_{4,}|…+/g;
-const optionPattern = /^([A-H])(?:[.)])?\s+(.+)$/;
+const optionStartPattern = /^([A-Ha-h])(?:[.)])?(?:\s+(.+))?$/;
 const sectionHeadingPattern =
   /^(?:SECTION \d|READING PASSAGE \d|Questions? \d|Test \d|Part \d)/i;
 
@@ -90,11 +97,14 @@ function buildQuestionItems(text: string, questionIds: string[], questions: Ques
         number: getQuestionNumber(questionId),
         introLines: [],
         bodyLines: [],
+        sharedChoices: [],
+        showSharedChoices: false,
       })),
     };
   }
 
   let previousEnd = 0;
+  let activeSharedChoices: ChoiceOption[] = [];
   const items = validQuestionIds.map<QuestionItem>((questionId, questionIndex) => {
     const number = getQuestionNumber(questionId);
     const ownStart = locatedStarts[questionIndex]?.index ?? -1;
@@ -108,6 +118,8 @@ function buildQuestionItems(text: string, questionIds: string[], questions: Ques
         number,
         introLines: [],
         bodyLines: [],
+        sharedChoices: activeSharedChoices,
+        showSharedChoices: false,
       };
     }
 
@@ -115,6 +127,18 @@ function buildQuestionItems(text: string, questionIds: string[], questions: Ques
     const introLines = introStart < ownStart ? lines.slice(introStart, ownStart) : [];
     const bodyEnd = nextStart ?? lines.length;
     const bodyLines = lines.slice(ownStart, bodyEnd);
+    const introChoices = optionChoices(introLines);
+    const beginsNewQuestionGroup = introLines.some((line) =>
+      /^Questions?\s+\d/i.test(line.trim()),
+    );
+    const showSharedChoices = introChoices.length >= 2;
+
+    if (showSharedChoices) {
+      activeSharedChoices = introChoices;
+    } else if (beginsNewQuestionGroup) {
+      activeSharedChoices = [];
+    }
+
     previousEnd = bodyEnd;
 
     return {
@@ -122,6 +146,8 @@ function buildQuestionItems(text: string, questionIds: string[], questions: Ques
       number,
       introLines,
       bodyLines,
+      sharedChoices: activeSharedChoices,
+      showSharedChoices,
     };
   });
 
@@ -138,10 +164,74 @@ function hasBlank(lines: string[]) {
   });
 }
 
-function optionLines(lines: string[]) {
-  return lines
-    .map((line) => line.trim().match(optionPattern))
-    .filter((match): match is RegExpMatchArray => Boolean(match));
+function optionChoices(lines: string[]): ChoiceOption[] {
+  const choices: ChoiceOption[] = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    const match = line.match(optionStartPattern);
+
+    if (!match) {
+      continue;
+    }
+
+    let text = match[2]?.trim() ?? "";
+    const nextLine = lines[index + 1]?.trim() ?? "";
+
+    if (
+      !text &&
+      nextLine &&
+      !optionStartPattern.test(nextLine) &&
+      !sectionHeadingPattern.test(nextLine) &&
+      getLineQuestionNumber(nextLine) === null
+    ) {
+      text = nextLine;
+      index += 1;
+    }
+
+    if (text) {
+      choices.push({
+        label: match[1].toUpperCase(),
+        text,
+      });
+    }
+  }
+
+  return choices;
+}
+
+function withoutOptionLines(lines: string[]) {
+  const filteredLines: string[] = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    const match = line.match(optionStartPattern);
+
+    if (!match) {
+      filteredLines.push(lines[index]);
+      continue;
+    }
+
+    const hasInlineText = Boolean(match[2]?.trim());
+    const nextLine = lines[index + 1]?.trim() ?? "";
+    const usesNextLineAsText =
+      !hasInlineText &&
+      nextLine &&
+      !optionStartPattern.test(nextLine) &&
+      !sectionHeadingPattern.test(nextLine) &&
+      getLineQuestionNumber(nextLine) === null;
+
+    if (usesNextLineAsText) {
+      index += 1;
+    }
+  }
+
+  return filteredLines;
+}
+
+function renderLineWithoutBlanks(line: string) {
+  blankPattern.lastIndex = 0;
+  return line.replace(blankPattern, "").replace(/\s{2,}/g, " ").trim();
 }
 
 function renderLineWithInput(
@@ -203,10 +293,18 @@ export function EmbeddedQuestionSheet({
   }
 
   function renderQuestion(item: QuestionItem) {
-    const choices = optionLines(item.bodyLines);
+    const choices = optionChoices(item.bodyLines);
     const bodyHasBlank = hasBlank(item.bodyLines);
+    const usesSharedChoices = item.sharedChoices.length >= 2 && bodyHasBlank;
     const shouldShowChoices = choices.length >= 2 && !bodyHasBlank;
-    const shouldShowFallbackInput = !shouldShowChoices && !bodyHasBlank;
+    const shouldShowFallbackInput =
+      !usesSharedChoices && !shouldShowChoices && !bodyHasBlank;
+    const visibleIntroLines = item.showSharedChoices
+      ? withoutOptionLines(item.introLines)
+      : item.introLines;
+    const visibleBodyLines = shouldShowChoices
+      ? withoutOptionLines(item.bodyLines)
+      : item.bodyLines;
 
     return (
       <article className={styles.questionCard} id={item.questionId} key={item.questionId}>
@@ -214,44 +312,28 @@ export function EmbeddedQuestionSheet({
           <span className={styles.numberBadge}>{item.number}</span>
           <span>{module === "listening" ? "Listening" : "Reading"}</span>
         </div>
-        {item.introLines.length > 0 ? (
+        {visibleIntroLines.length > 0 ? (
           <div className={styles.introBlock}>
-            {item.introLines.map((line, index) => (
+            {visibleIntroLines.map((line, index) => (
               <p className={styles.introLine} key={`${item.questionId}:intro:${index}`}>
                 {line}
               </p>
             ))}
           </div>
         ) : null}
+        {item.showSharedChoices ? (
+          <div className={styles.optionBank}>
+            {item.sharedChoices.map((choice) => (
+              <p className={styles.optionBankLine} key={`${item.questionId}:bank:${choice.label}`}>
+                <span className={styles.choiceLabel}>{choice.label}</span>
+                <span>{choice.text}</span>
+              </p>
+            ))}
+          </div>
+        ) : null}
         <div className={styles.bodyBlock}>
           {item.bodyLines.length > 0 ? (
-            item.bodyLines.map((line, index) => {
-              const optionMatch = line.trim().match(optionPattern);
-
-              if (shouldShowChoices && optionMatch) {
-                const label = optionMatch[1];
-                return (
-                  <label
-                    className={styles.choiceOption}
-                    key={`${item.questionId}:option:${label}`}
-                  >
-                    <input
-                      checked={answers[item.questionId] === label}
-                      disabled={isReviewMode}
-                      name={item.questionId}
-                      type="radio"
-                      value={label}
-                      onChange={() => {
-                        onFocusQuestion(item.questionId);
-                        onAnswer(item.questionId, label);
-                      }}
-                    />
-                    <span className={styles.choiceLabel}>{label}</span>
-                    <span>{optionMatch[2]}</span>
-                  </label>
-                );
-              }
-
+            visibleBodyLines.map((line, index) => {
               return (
                 <p
                   className={
@@ -261,9 +343,11 @@ export function EmbeddedQuestionSheet({
                   }
                   key={`${item.questionId}:line:${index}`}
                 >
-                  {renderLineWithInput(line, item.questionId, () =>
-                    renderInput(item.questionId, item.number, true),
-                  )}
+                  {usesSharedChoices
+                    ? renderLineWithoutBlanks(line)
+                    : renderLineWithInput(line, item.questionId, () =>
+                        renderInput(item.questionId, item.number, true),
+                      )}
                 </p>
               );
             })
@@ -273,6 +357,54 @@ export function EmbeddedQuestionSheet({
           {shouldShowFallbackInput ? (
             <div className={styles.fallbackAnswer}>
               {renderInput(item.questionId, item.number)}
+            </div>
+          ) : null}
+          {shouldShowChoices ? (
+            <div className={styles.fullChoiceGroup}>
+              {choices.map((choice) => (
+                <label
+                  className={styles.choiceOption}
+                  key={`${item.questionId}:option:${choice.label}`}
+                >
+                  <input
+                    checked={answers[item.questionId] === choice.label}
+                    disabled={isReviewMode}
+                    name={item.questionId}
+                    type="radio"
+                    value={choice.label}
+                    onChange={() => {
+                      onFocusQuestion(item.questionId);
+                      onAnswer(item.questionId, choice.label);
+                    }}
+                  />
+                  <span className={styles.choiceLabel}>{choice.label}</span>
+                  <span>{choice.text}</span>
+                </label>
+              ))}
+            </div>
+          ) : null}
+          {usesSharedChoices ? (
+            <div className={styles.letterChoiceGroup}>
+              {item.sharedChoices.map((choice) => (
+                <label
+                  className={styles.letterChoice}
+                  key={`${item.questionId}:letter:${choice.label}`}
+                  title={choice.text}
+                >
+                  <input
+                    checked={answers[item.questionId] === choice.label}
+                    disabled={isReviewMode}
+                    name={item.questionId}
+                    type="radio"
+                    value={choice.label}
+                    onChange={() => {
+                      onFocusQuestion(item.questionId);
+                      onAnswer(item.questionId, choice.label);
+                    }}
+                  />
+                  <span>{choice.label}</span>
+                </label>
+              ))}
             </div>
           ) : null}
         </div>
