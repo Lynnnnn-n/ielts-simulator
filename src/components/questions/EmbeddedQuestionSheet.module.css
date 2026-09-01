@@ -72,6 +72,44 @@
   font-size: 1rem;
 }
 
+.tableWrap {
+  overflow-x: auto;
+}
+
+.tableTitle {
+  font-size: 1rem;
+  margin: 0 0 10px;
+}
+
+.completionTable {
+  border-collapse: collapse;
+  min-width: 680px;
+  width: 100%;
+}
+
+.completionTable th,
+.completionTable td {
+  border: 1px solid #777;
+  line-height: 1.45;
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.completionTable th {
+  background: #f0f0f0;
+  font-weight: 700;
+}
+
+.completionTable .compactInput {
+  margin-bottom: 2px;
+  margin-top: 2px;
+}
+
+.inlineAnchor {
+  scroll-margin-top: 90px;
+}
+
 .optionBank {
   border: 1px solid #b7b7b7;
   margin: 0 0 14px;

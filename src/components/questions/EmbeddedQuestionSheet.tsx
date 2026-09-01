@@ -35,6 +35,14 @@ interface ManualChoicePlan {
   options: ChoiceOption[];
 }
 
+interface ManualTablePlan {
+  start: number;
+  end: number;
+  title: string;
+  headers: string[];
+  rows: string[][];
+}
+
 const blankPattern = /(?:\. ?){4,}|_{4,}|…+/g;
 const blankCapturePattern = /((?:\. ?){4,}|_{4,}|…+)/;
 const optionStartPattern = /^([A-Ha-h])(?:[.)])?(?:\s+(.+))?$/;
@@ -203,12 +211,134 @@ const manualChoicePlans: Record<string, ManualChoicePlan[]> = {
   ],
 };
 
+const manualTablePlans: Record<string, ManualTablePlan[]> = {
+  "mock-test-01:listening": [
+    {
+      start: 5,
+      end: 8,
+      title: "WEEKEND TRIPS",
+      headers: ["Place", "Date", "Number of seats", "Optional extra"],
+      rows: [
+        ["St Ives", "{5}", "16", "Hepworth Museum"],
+        ["London", "16th February", "45", "{6}"],
+        ["{7}", "3rd March", "18", "S.S. Great Britain"],
+        ["Salisbury", "18th March", "50", "Stonehenge"],
+        ["Bath", "23rd March", "16", "{8}"],
+      ],
+    },
+  ],
+  "mock-test-02:listening": [
+    {
+      start: 6,
+      end: 8,
+      title: "Tourist attractions",
+      headers: ["Category", "Attractions"],
+      rows: [
+        ["Open all day", "{6} and Gardens"],
+        ["NOT open on Mondays", "{7} and Castle"],
+        ["Free entry", "{8} and Markets"],
+      ],
+    },
+    {
+      start: 27,
+      end: 30,
+      title: "AUTHOR DETAILS",
+      headers: ["Author", "Title", "Publisher", "Year of publication"],
+      rows: [
+        ["{27}", "'Sample Surveys in Social Science Research'", "", ""],
+        ["Bell", "{28}", "{29}", ""],
+        ["Wilson", "'Interviews That Work'", "Oxford University Press", "{30}"],
+      ],
+    },
+  ],
+  "mock-test-03:listening": [
+    {
+      start: 15,
+      end: 20,
+      title: "Festival performances",
+      headers: ["Type of performance", "Where", "Highlights", "Type of audience"],
+      rows: [
+        ["Circus Romano", "{15}", "Clowns, acrobats, music and {16}", ""],
+        ["Circus Electrica", "{17}", "Dancers, magicians and aerial displays", "{18}"],
+        ["Mekong Water Puppets", "{19}", "Seeing the puppeteers at the end", "{20}"],
+      ],
+    },
+    {
+      start: 33,
+      end: 37,
+      title: "CHOICE OF SITE",
+      headers: ["", "Site One", "Site Two", "Site Three"],
+      rows: [
+        ["Location", "City centre near {33}", "Outskirts near park", "Out of town near the Faculty of {34}"],
+        ["Advantages and/or disadvantages", "Problems with {35} and traffic", "Close to halls of residence, so more {36}", "Access to living quarters. Larger site. {37}"],
+      ],
+    },
+  ],
+  "mock-test-04:listening": [
+    {
+      start: 16,
+      end: 20,
+      title: "Walking holidays",
+      headers: ["Length of holiday", "Cost per person", "Special offers included in price"],
+      rows: [
+        ["3 days", "$ {16}", "Pick up from the {17}"],
+        ["7 days", "$350", "As above plus book of {18} and maps"],
+        ["14 days", "$ {19}", "As above plus membership of a {20}"],
+      ],
+    },
+    {
+      start: 21,
+      end: 26,
+      title: "Science experiments",
+      headers: ["Experiment number", "Equipment", "Purpose"],
+      rows: [
+        ["Experiment 1", "{21} and a table", "To show how things move on a cushion of air"],
+        ["Experiment 2", "Lots of paperclips", "To show why we need standard {22}"],
+        ["Experiment 3", "{23} and a jar of water", "To show how {24} grow"],
+        ["Experiment 4", "Cardboard, coloured pens and a {25}", "To teach children about how {26} is made up"],
+        ["Experiment 5", "A drill, an old record, a pin/needle, paper, a bolt", "To make a record player in order to learn about recording sound"],
+      ],
+    },
+  ],
+  "mock-test-03:reading": [
+    {
+      start: 5,
+      end: 8,
+      title: "Organisations",
+      headers: ["Country", "Organisations involved", "Type of project", "Support provided"],
+      rows: [
+        ["{5}", "S.K.I.", "Courier service and {6}", "Provision of training"],
+        ["Dominican Republic", "S.K.I.; Y.W.C.A.", "{7}", "Loans, storage facilities, savings plans"],
+        ["Zambia", "S.K.I.; The Red Cross; {8}; Y.W.C.A.", "Setting up small businesses", "Business training and access to credit"],
+      ],
+    },
+    {
+      start: 32,
+      end: 36,
+      title: "METHODS OF OBTAINING LINGUISTIC DATA",
+      headers: ["Method", "Advantages", "Disadvantages"],
+      rows: [
+        ["{32} as informant", "Convenient method of enquiry", "Not objective enough"],
+        ["Non-linguist as informant", "Necessary with {33} and child speech", "The number of factors to be considered"],
+        ["Recording an informant", "Allows linguists' claims to be checked", "{34} of sound"],
+        ["Videoing an informant", "Allows speakers' {35} to be observed", "{36} might miss certain things"],
+      ],
+    },
+  ],
+};
+
 function getManualChoicePlan(
   testId: string,
   module: ExamModule,
   number: number,
 ) {
   return manualChoicePlans[`${testId}:${module}`]?.find(
+    (plan) => number >= plan.start && number <= plan.end,
+  );
+}
+
+function getManualTablePlan(testId: string, module: ExamModule, number: number) {
+  return manualTablePlans[`${testId}:${module}`]?.find(
     (plan) => number >= plan.start && number <= plan.end,
   );
 }
@@ -592,8 +722,71 @@ export function EmbeddedQuestionSheet({
     );
   }
 
+  function questionIdForNumber(number: number) {
+    return `${module === "listening" ? "lq" : "rq"}${number}`;
+  }
+
+  function renderCellContent(cell: string) {
+    const parts: ReactNode[] = [];
+    const placeholderPattern = /\{(\d{1,2})\}/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = placeholderPattern.exec(cell)) !== null) {
+      const number = Number(match[1]);
+      const questionId = questionIdForNumber(number);
+
+      parts.push(cell.slice(lastIndex, match.index));
+      parts.push(
+        <span className={styles.inlineAnchor} id={questionId} key={`${questionId}:anchor`}>
+          {renderInput(questionId, number, true)}
+        </span>,
+      );
+      lastIndex = match.index + match[0].length;
+    }
+
+    parts.push(cell.slice(lastIndex));
+
+    return parts.map((part, index) => (
+      <span key={`cell-part:${index}`}>{part}</span>
+    ));
+  }
+
+  function renderTable(plan: ManualTablePlan) {
+    return (
+      <div className={styles.tableWrap}>
+        <h3 className={styles.tableTitle}>{plan.title}</h3>
+        <table className={styles.completionTable}>
+          <thead>
+            <tr>
+              {plan.headers.map((header) => (
+                <th key={header || "blank"}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {plan.rows.map((row, rowIndex) => (
+              <tr key={`${plan.title}:row:${rowIndex}`}>
+                {row.map((cell, cellIndex) => (
+                  <td key={`${plan.title}:cell:${rowIndex}:${cellIndex}`}>
+                    {renderCellContent(cell)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   function renderQuestion(item: QuestionItem) {
     const manualPlan = getManualChoicePlan(testId, module, item.number);
+    const tablePlan = getManualTablePlan(testId, module, item.number);
+    if (tablePlan && item.number !== tablePlan.start) {
+      return null;
+    }
+
     const extractedBodyChoices = choicesMatchingPlan(
       optionChoices(item.bodyLines),
       manualPlan,
@@ -624,6 +817,7 @@ export function EmbeddedQuestionSheet({
         : manualPlan?.options ?? item.sharedChoices;
     const showOptionBank =
       manualPlan?.style === "option-bank" ? item.number === manualPlan.start : false;
+    const isTableGroup = Boolean(tablePlan);
 
     return (
       <article className={styles.questionCard} id={item.questionId} key={item.questionId}>
@@ -651,7 +845,8 @@ export function EmbeddedQuestionSheet({
           </div>
         ) : null}
         <div className={styles.bodyBlock}>
-          {item.bodyLines.length > 0 ? (
+          {tablePlan ? renderTable(tablePlan) : null}
+          {!isTableGroup && item.bodyLines.length > 0 ? (
             visibleBodyLines.map((line, index) => {
               return (
                 <p
@@ -670,15 +865,15 @@ export function EmbeddedQuestionSheet({
                 </p>
               );
             })
-          ) : (
+          ) : !isTableGroup ? (
             <p className={styles.promptLine}>Question {item.number}</p>
-          )}
-          {shouldShowFallbackInput ? (
+          ) : null}
+          {!isTableGroup && shouldShowFallbackInput ? (
             <div className={styles.fallbackAnswer}>
               {renderInput(item.questionId, item.number)}
             </div>
           ) : null}
-          {shouldShowChoices ? (
+          {!isTableGroup && shouldShowChoices ? (
             <div className={styles.fullChoiceGroup}>
               {choices.map((choice) => (
                 <label
@@ -702,7 +897,7 @@ export function EmbeddedQuestionSheet({
               ))}
             </div>
           ) : null}
-          {usesSharedChoices || usesLetterRow ? (
+          {!isTableGroup && (usesSharedChoices || usesLetterRow) ? (
             <div className={styles.letterChoiceGroup}>
               {(usesLetterRow ? choices : bankChoices).map((choice) => (
                 <label
