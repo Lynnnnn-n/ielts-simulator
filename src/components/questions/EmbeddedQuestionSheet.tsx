@@ -36,6 +36,7 @@ interface ManualChoicePlan {
 }
 
 const blankPattern = /(?:\. ?){4,}|_{4,}|…+/g;
+const blankCapturePattern = /((?:\. ?){4,}|_{4,}|…+)/;
 const optionStartPattern = /^([A-Ha-h])(?:[.)])?(?:\s+(.+))?$/;
 const removableOptionLinePattern =
   /^([A-Ha-h]|i|ii|iii|iv|v|vi|vii|viii)(?:[.)])?\s+(.+)$/;
@@ -69,6 +70,25 @@ const trueFalseNotGiven = ["TRUE", "FALSE", "NOT GIVEN"].map((label) =>
 );
 
 const manualChoicePlans: Record<string, ManualChoicePlan[]> = {
+  "mock-test-01:listening": [
+    { start: 21, end: 22, style: "choice-list", options: abc },
+    { start: 23, end: 27, style: "option-bank", options: ag },
+    {
+      start: 28,
+      end: 30,
+      style: "option-bank",
+      options: [
+        option("A", "uncooperative landlord"),
+        option("B", "environment"),
+        option("C", "space"),
+        option("D", "noisy neighbours"),
+        option("E", "near city"),
+        option("F", "work location"),
+        option("G", "transport"),
+        option("H", "rent"),
+      ],
+    },
+  ],
   "mock-test-02:listening": [
     { start: 1, end: 5, style: "choice-list", options: abc },
     { start: 11, end: 20, style: "choice-list", options: abc },
@@ -102,7 +122,7 @@ const manualChoicePlans: Record<string, ManualChoicePlan[]> = {
       ],
     },
     { start: 35, end: 38, style: "choice-list", options: abc },
-    { start: 39, end: 40, style: "option-bank", options: ae },
+    { start: 39, end: 40, style: "option-bank", options: ag },
   ],
   "mock-test-02:reading": [
     {
@@ -242,20 +262,15 @@ function getLineQuestionNumber(line: string) {
   return namedMatch ? Number(namedMatch[1]) : null;
 }
 
-function getDirectQuestionNumber(line: string) {
+function hasDirectQuestionNumber(line: string, expectedNumber: number) {
   const trimmed = line.trim();
-  const directMatch = trimmed.match(/^(\d{1,2})(?:\s+|$)/);
-  if (directMatch) {
-    return Number(directMatch[1]);
-  }
+  const escapedNumber = String(expectedNumber);
 
-  const blankMatch = trimmed.match(/\b(\d{1,2})\s*(?:\. ?){4,}/);
-  if (blankMatch) {
-    return Number(blankMatch[1]);
-  }
-
-  const namedMatch = trimmed.match(/^Question\s+(\d{1,2})\b/i);
-  return namedMatch ? Number(namedMatch[1]) : null;
+  return (
+    new RegExp(`^${escapedNumber}(?:\\s+|$)`).test(trimmed) ||
+    new RegExp(`\\b${escapedNumber}\\s*(?:\\. ?){4,}`).test(trimmed) ||
+    new RegExp(`^Question\\s+${escapedNumber}\\b`, "i").test(trimmed)
+  );
 }
 
 function getGroupedQuestionRange(line: string) {
@@ -295,8 +310,8 @@ function startsFor(lines: string[], numbers: number[]) {
   return numbers.map((number) => ({
     number,
     index: (() => {
-      const directIndex = lines.findIndex(
-        (line) => getDirectQuestionNumber(line) === number,
+      const directIndex = lines.findIndex((line) =>
+        hasDirectQuestionNumber(line, number),
       );
 
       if (directIndex >= 0) {
@@ -306,6 +321,17 @@ function startsFor(lines: string[], numbers: number[]) {
       return lines.findIndex((line) => isGroupedQuestionStart(line, number));
     })(),
   }));
+}
+
+function nextLaterGroupedHeadingIndex(lines: string[], startIndex: number, number: number) {
+  return lines.findIndex((line, index) => {
+    if (index <= startIndex) {
+      return false;
+    }
+
+    const range = getGroupedQuestionRange(line);
+    return Boolean(range && range.start > number);
+  });
 }
 
 function lastHeadingBefore(lines: string[], startIndex: number, previousEnd: number) {
@@ -363,17 +389,19 @@ function buildQuestionItems(text: string, questionIds: string[], questions: Ques
 
     const introStart = lastHeadingBefore(lines, ownStart, previousEnd);
     const introLines = introStart < ownStart ? lines.slice(introStart, ownStart) : [];
-    const bodyEnd = nextStart ?? lines.length;
+    const laterHeadingIndex = nextLaterGroupedHeadingIndex(lines, ownStart, number);
+    const bodyEndCandidates = [nextStart, laterHeadingIndex]
+      .filter((index): index is number => typeof index === "number" && index >= 0)
+      .filter((index) => index > ownStart);
+    const bodyEnd =
+      bodyEndCandidates.length > 0 ? Math.min(...bodyEndCandidates) : lines.length;
     const bodyLines = lines.slice(ownStart, bodyEnd);
-    const introChoices = optionChoices(introLines);
     const beginsNewQuestionGroup = introLines.some((line) =>
       /^Questions?\s+\d/i.test(line.trim()),
     );
-    const showSharedChoices = introChoices.length >= 2;
+    const showSharedChoices = false;
 
-    if (showSharedChoices) {
-      activeSharedChoices = introChoices;
-    } else if (beginsNewQuestionGroup) {
+    if (beginsNewQuestionGroup) {
       activeSharedChoices = [];
     }
 
@@ -389,8 +417,11 @@ function buildQuestionItems(text: string, questionIds: string[], questions: Ques
     };
   });
 
+  const firstStartIndex = foundStarts[0].index;
+  const topIntroEnd = lastHeadingBefore(lines, firstStartIndex, 0);
+
   return {
-    introLines: lines.slice(0, foundStarts[0].index),
+    introLines: lines.slice(0, topIntroEnd),
     items,
   };
 }
@@ -486,9 +517,28 @@ function renderLineWithoutBlanks(line: string) {
 function renderLineWithInput(
   line: string,
   questionId: string,
+  questionNumber: number,
   renderInput: () => ReactNode,
 ) {
   const parts: ReactNode[] = [];
+  const numberedBlankPattern = new RegExp(
+    `\\b(${questionNumber}\\s*)${blankCapturePattern.source}`,
+  );
+  const numberedBlankMatch = line.match(numberedBlankPattern);
+
+  if (numberedBlankMatch?.index !== undefined) {
+    const inputIndex = numberedBlankMatch.index + numberedBlankMatch[1].length;
+    const blankLength = numberedBlankMatch[2].length;
+
+    return [
+      <span key={`${questionId}:before`}>{line.slice(0, inputIndex)}</span>,
+      <span key={`${questionId}:input`}>{renderInput()}</span>,
+      <span key={`${questionId}:after`}>
+        {line.slice(inputIndex + blankLength)}
+      </span>,
+    ];
+  }
+
   let lastIndex = 0;
   let hasRenderedInput = false;
   let match: RegExpExecArray | null;
@@ -548,14 +598,7 @@ export function EmbeddedQuestionSheet({
       optionChoices(item.bodyLines),
       manualPlan,
     );
-    const extractedIntroChoices = choicesMatchingPlan(
-      optionChoices(item.introLines),
-      manualPlan,
-    );
-    const extractedChoices = dedupeChoices([
-      ...extractedIntroChoices,
-      ...extractedBodyChoices,
-    ]);
+    const extractedChoices = dedupeChoices(extractedBodyChoices);
     const manualChoices = manualPlan?.options ?? [];
     const choices =
       manualPlan && optionsAreOnlyLabels(manualChoices) && extractedChoices.length >= 2
@@ -563,8 +606,7 @@ export function EmbeddedQuestionSheet({
         : manualPlan?.options ?? extractedBodyChoices;
     const bodyHasBlank = hasBlank(item.bodyLines);
     const usesSharedChoices =
-      manualPlan?.style === "option-bank" ||
-      (item.sharedChoices.length >= 2 && bodyHasBlank);
+      manualPlan?.style === "option-bank";
     const usesLetterRow = manualPlan?.style === "letter-row";
     const shouldShowChoices =
       manualPlan?.style === "choice-list" || (choices.length >= 2 && !bodyHasBlank);
@@ -581,9 +623,7 @@ export function EmbeddedQuestionSheet({
         ? extractedChoices
         : manualPlan?.options ?? item.sharedChoices;
     const showOptionBank =
-      manualPlan?.style === "option-bank"
-        ? item.number === manualPlan.start
-        : item.showSharedChoices;
+      manualPlan?.style === "option-bank" ? item.number === manualPlan.start : false;
 
     return (
       <article className={styles.questionCard} id={item.questionId} key={item.questionId}>
@@ -624,7 +664,7 @@ export function EmbeddedQuestionSheet({
                 >
                   {usesSharedChoices
                     ? renderLineWithoutBlanks(line)
-                    : renderLineWithInput(line, item.questionId, () =>
+                    : renderLineWithInput(line, item.questionId, item.number, () =>
                         renderInput(item.questionId, item.number, true),
                       )}
                 </p>

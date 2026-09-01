@@ -1,7 +1,7 @@
 import { makeImportedMockTest } from "./mockTestFactory";
+import { test4ListeningPartTextsBySection } from "./listeningTextOverrides";
 import { test4ReadingPassages } from "./readingPassages";
 import {
-  test4ListeningPartTexts,
   test4ReadingQuestionTexts,
   test4WritingPrompts,
 } from "./sourceQuestionTexts";
@@ -16,7 +16,7 @@ export const mockTest04 = makeImportedMockTest({
     [86, 87],
     [88, 89],
   ],
-  listeningPartTexts: test4ListeningPartTexts,
+  listeningPartTexts: test4ListeningPartTextsBySection,
   readingPageGroups: [
     [89, 90, 91, 92],
     [93, 94, 95, 96],
