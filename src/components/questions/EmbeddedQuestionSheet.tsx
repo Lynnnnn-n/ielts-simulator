@@ -193,8 +193,41 @@ function getManualChoicePlan(
   );
 }
 
+function optionsAreOnlyLabels(options: ChoiceOption[]) {
+  return options.every((choice) => choice.text === choice.label);
+}
+
+function dedupeChoices(options: ChoiceOption[]) {
+  const seen = new Set<string>();
+
+  return options.filter((choice) => {
+    if (seen.has(choice.label)) {
+      return false;
+    }
+
+    seen.add(choice.label);
+    return true;
+  });
+}
+
+function choicesMatchingPlan(options: ChoiceOption[], plan?: ManualChoicePlan) {
+  if (!plan) {
+    return options;
+  }
+
+  const allowedLabels = new Set(plan.options.map((choice) => choice.label));
+  return options.filter((choice) => allowedLabels.has(choice.label));
+}
+
 function getLineQuestionNumber(line: string) {
   const trimmed = line.trim();
+  const groupedHeadingMatch = trimmed.match(
+    /^Questions?\s+(\d{1,2})(?:\s*(?:-|to|and)\s*(\d{1,2}))?/i,
+  );
+  if (groupedHeadingMatch) {
+    return Number(groupedHeadingMatch[1]);
+  }
+
   const directMatch = trimmed.match(/^(\d{1,2})(?:\s+|$)/);
   if (directMatch) {
     return Number(directMatch[1]);
@@ -210,6 +243,16 @@ function getLineQuestionNumber(line: string) {
 }
 
 function isQuestionStart(line: string, expectedNumber: number) {
+  const groupedHeadingMatch = line.trim().match(
+    /^Questions?\s+(\d{1,2})(?:\s*(?:-|to|and)\s*(\d{1,2}))?/i,
+  );
+
+  if (groupedHeadingMatch) {
+    const start = Number(groupedHeadingMatch[1]);
+    const end = Number(groupedHeadingMatch[2] ?? groupedHeadingMatch[1]);
+    return expectedNumber >= start && expectedNumber <= end;
+  }
+
   return getLineQuestionNumber(line) === expectedNumber;
 }
 
@@ -463,7 +506,23 @@ export function EmbeddedQuestionSheet({
 
   function renderQuestion(item: QuestionItem) {
     const manualPlan = getManualChoicePlan(testId, module, item.number);
-    const choices = manualPlan?.options ?? optionChoices(item.bodyLines);
+    const extractedBodyChoices = choicesMatchingPlan(
+      optionChoices(item.bodyLines),
+      manualPlan,
+    );
+    const extractedIntroChoices = choicesMatchingPlan(
+      optionChoices(item.introLines),
+      manualPlan,
+    );
+    const extractedChoices = dedupeChoices([
+      ...extractedIntroChoices,
+      ...extractedBodyChoices,
+    ]);
+    const manualChoices = manualPlan?.options ?? [];
+    const choices =
+      manualPlan && optionsAreOnlyLabels(manualChoices) && extractedChoices.length >= 2
+        ? extractedChoices
+        : manualPlan?.options ?? extractedBodyChoices;
     const bodyHasBlank = hasBlank(item.bodyLines);
     const usesSharedChoices =
       manualPlan?.style === "option-bank" ||
@@ -479,7 +538,10 @@ export function EmbeddedQuestionSheet({
     const visibleBodyLines = shouldShowChoices || usesSharedChoices
       ? withoutOptionLines(item.bodyLines)
       : item.bodyLines;
-    const bankChoices = manualPlan?.options ?? item.sharedChoices;
+    const bankChoices =
+      manualPlan && optionsAreOnlyLabels(manualChoices) && extractedChoices.length >= 2
+        ? extractedChoices
+        : manualPlan?.options ?? item.sharedChoices;
     const showOptionBank =
       manualPlan?.style === "option-bank"
         ? item.number === manualPlan.start
