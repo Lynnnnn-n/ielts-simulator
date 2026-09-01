@@ -242,18 +242,46 @@ function getLineQuestionNumber(line: string) {
   return namedMatch ? Number(namedMatch[1]) : null;
 }
 
-function isQuestionStart(line: string, expectedNumber: number) {
+function getDirectQuestionNumber(line: string) {
+  const trimmed = line.trim();
+  const directMatch = trimmed.match(/^(\d{1,2})(?:\s+|$)/);
+  if (directMatch) {
+    return Number(directMatch[1]);
+  }
+
+  const blankMatch = trimmed.match(/\b(\d{1,2})\s*(?:\. ?){4,}/);
+  if (blankMatch) {
+    return Number(blankMatch[1]);
+  }
+
+  const namedMatch = trimmed.match(/^Question\s+(\d{1,2})\b/i);
+  return namedMatch ? Number(namedMatch[1]) : null;
+}
+
+function getGroupedQuestionRange(line: string) {
   const groupedHeadingMatch = line.trim().match(
     /^Questions?\s+(\d{1,2})(?:\s*(?:-|to|and)\s*(\d{1,2}))?/i,
   );
 
-  if (groupedHeadingMatch) {
-    const start = Number(groupedHeadingMatch[1]);
-    const end = Number(groupedHeadingMatch[2] ?? groupedHeadingMatch[1]);
+  if (!groupedHeadingMatch) {
+    return null;
+  }
+
+  return {
+    start: Number(groupedHeadingMatch[1]),
+    end: Number(groupedHeadingMatch[2] ?? groupedHeadingMatch[1]),
+  };
+}
+
+function isGroupedQuestionStart(line: string, expectedNumber: number) {
+  const range = getGroupedQuestionRange(line);
+
+  if (range) {
+    const { start, end } = range;
     return expectedNumber >= start && expectedNumber <= end;
   }
 
-  return getLineQuestionNumber(line) === expectedNumber;
+  return false;
 }
 
 function normalizeLines(text: string) {
@@ -266,7 +294,17 @@ function normalizeLines(text: string) {
 function startsFor(lines: string[], numbers: number[]) {
   return numbers.map((number) => ({
     number,
-    index: lines.findIndex((line) => isQuestionStart(line, number)),
+    index: (() => {
+      const directIndex = lines.findIndex(
+        (line) => getDirectQuestionNumber(line) === number,
+      );
+
+      if (directIndex >= 0) {
+        return directIndex;
+      }
+
+      return lines.findIndex((line) => isGroupedQuestionStart(line, number));
+    })(),
   }));
 }
 

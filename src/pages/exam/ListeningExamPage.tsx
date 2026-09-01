@@ -101,6 +101,11 @@ export function ListeningExamPage() {
   const materialStatus = loadedTest.materials.listening;
   const selectedPart =
     loadedTest.listening.parts[selectedPartIndex] ?? loadedTest.listening.parts[0];
+  const selectedPartText =
+    selectedPart.instruction ??
+    questions.find((question) => question.id === selectedPart.questionIds[0])
+      ?.instruction ??
+    "";
 
   function selectQuestion(questionId: string) {
     setCurrentQuestion(loadedTest.metadata.id, "listening", questionId);
@@ -175,7 +180,7 @@ export function ListeningExamPage() {
               module="listening"
               questionIds={selectedPart.questionIds}
               questions={questions}
-              text={selectedPart.instruction ?? ""}
+              text={selectedPartText}
               onAnswer={(questionId: string, value: string) =>
                 setAnswer(loadedTest.metadata.id, "listening", questionId, value)
               }
