@@ -268,6 +268,7 @@ export function ObjectiveExamPage({ module }: ObjectiveExamPageProps) {
             {loadedTest.reading.passages.map((passage) => (
               <Fragment key={passage.id}>
                 <HighlightablePassage
+                  assets={loadedTest.assets}
                   highlights={activeSession.highlights}
                   notes={activeSession.notes}
                   passage={passage}

@@ -77,6 +77,12 @@ const assets: TestAsset[] = [
     description: "Reading Passage 3 Fig. 1",
   },
   {
+    id: "visual-symbols-fig-2",
+    type: "image",
+    path: "/assets/mock-test-01/figures/visual-symbols-fig-2.png",
+    description: "Reading Passage 3 Fig. 2",
+  },
+  {
     id: "movement-diagrams-q30-32",
     type: "image",
     path: "/assets/mock-test-01/figures/movement-diagrams-q30-32.png",
@@ -122,7 +128,6 @@ const readingPassage3Body = [
   "We have found that the blind understand other kinds of visual metaphors as well. One blind woman drew a picture of a child inside a heart - choosing that symbol, she said, to show that love surrounded the child. With Chang Hong Liu, a doctoral student from China, I have begun exploring how well blind people understand the symbolism behind shapes such as hearts that do not directly represent their meaning.",
   "We gave a list of twenty pairs of words to sighted subjects and asked them to pick from each pair the term that best related to a circle and the term that best related to a square. For example, we asked: What goes with soft? A circle or a square? Which shape goes with hard?",
   "All our subjects deemed the circle soft and the square hard. A full 94% ascribed happy to the circle, instead of sad. But other pairs revealed less agreement: 79% matched fast to slow and weak to strong, respectively. And only 51% linked deep to circle and shallow to square. (See Fig. 2.) When we tested four totally blind volunteers using the same list, we found that their choices closely resembled those made by the sighted subjects. One man, who had been blind since birth, scored extremely well. He made only one match differing from the consensus, assigning 'far' to square and 'near' to circle. In fact, only a small majority of sighted subjects - 53% - had paired far and near to the opposite partners. Thus, we concluded that the blind interpret abstract shapes as sighted people do.",
-  "Fig. 2 data: SOFT-HARD 100; MOTHER-FATHER 94; HAPPY-SAD 94; GOOD-EVIL 89; LOVE-HATE 89; ALIVE-DEAD 87; BRIGHT-DARK 87; LIGHT-HEAVY 85; WARM-COLD 81; SUMMER-WINTER 81; WEAK-STRONG 79; FAST-SLOW 79; CAT-DOG 74; SPRING-FALL 74; QUIET-LOUD 62; WALKING-STANDING 62; ODD-EVEN 57; FAR-NEAR 53; PLANT-ANIMAL 53; DEEP-SHALLOW 51.",
 ];
 
 const readingQuestions: Question[] = [
@@ -564,7 +569,33 @@ export const mockTest01: MockTest = {
         title: "READING PASSAGE 3",
         subtitle: "Questions 27-40",
         body: readingPassage3Body,
-        imageAssetIds: ["visual-symbols-fig-1"],
+        contentBlocks: [
+          { id: "reading-passage-3:p:0", type: "text", content: readingPassage3Body[0] },
+          { id: "reading-passage-3:p:1", type: "text", content: readingPassage3Body[1] },
+          { id: "reading-passage-3:p:2", type: "text", content: readingPassage3Body[2] },
+          { id: "reading-passage-3:p:3", type: "text", content: readingPassage3Body[3] },
+          {
+            id: "reading-passage-3:fig:1",
+            type: "image",
+            assetId: "visual-symbols-fig-1",
+            caption: "Fig. 1",
+          },
+          { id: "reading-passage-3:p:4", type: "text", content: readingPassage3Body[4] },
+          { id: "reading-passage-3:p:5", type: "text", content: readingPassage3Body[5] },
+          { id: "reading-passage-3:p:6", type: "text", content: readingPassage3Body[6] },
+          { id: "reading-passage-3:p:7", type: "text", content: readingPassage3Body[7] },
+          { id: "reading-passage-3:p:8", type: "text", content: readingPassage3Body[8] },
+          { id: "reading-passage-3:p:9", type: "text", content: readingPassage3Body[9] },
+          { id: "reading-passage-3:p:10", type: "text", content: readingPassage3Body[10] },
+          { id: "reading-passage-3:p:11", type: "text", content: readingPassage3Body[11] },
+          {
+            id: "reading-passage-3:fig:2",
+            type: "image",
+            assetId: "visual-symbols-fig-2",
+            caption:
+              "Fig. 2 Subjects were asked which word in each pair fits best with a circle and which with a square.",
+          },
+        ],
         questionIds: Array.from({ length: 14 }, (_, index) => `rq${index + 27}`),
       },
     ],

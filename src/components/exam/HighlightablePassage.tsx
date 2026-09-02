@@ -3,7 +3,9 @@ import type {
   ReadingPassage,
   TextHighlight,
   TextNote,
+  TestAsset,
 } from "../../domain/examTypes";
+import { AssetImage } from "./AssetImage";
 import { blockHighlights, rangesOverlap } from "../../domain/highlights";
 import styles from "./HighlightablePassage.module.css";
 
@@ -32,6 +34,7 @@ interface NoteEditorState {
 
 interface HighlightablePassageProps {
   passage: ReadingPassage;
+  assets?: TestAsset[];
   highlights: TextHighlight[];
   notes: TextNote[];
   onAddHighlight: (highlight: Omit<TextHighlight, "id">) => void;
@@ -183,6 +186,7 @@ function renderMarkedText(
 
 export function HighlightablePassage({
   passage,
+  assets = [],
   highlights,
   notes,
   onAddHighlight,
@@ -376,6 +380,43 @@ export function HighlightablePassage({
           rangesOverlap(note, menu.range),
       ));
 
+  function renderTextParagraph(paragraph: string, blockId: string) {
+    return (
+      <p
+        data-highlight-block-id={blockId}
+        data-passage-id={passage.id}
+        key={blockId}
+      >
+        {renderMarkedText(
+          paragraph,
+          blockHighlights(highlights, passage.id, blockId),
+          notes.filter(
+            (note) =>
+              note.passageId === passage.id && note.blockId === blockId,
+          ),
+          (event, mark) => {
+            event.preventDefault();
+            setMenu({
+              x: event.clientX,
+              y: event.clientY,
+              highlightId: mark.highlightId,
+              noteId: mark.noteId,
+            });
+          },
+          openExistingNote,
+        )}
+      </p>
+    );
+  }
+
+  const contentBlocks =
+    passage.contentBlocks ??
+    passage.body.map((content, index) => ({
+      id: `${passage.id}:p:${index}`,
+      type: "text" as const,
+      content,
+    }));
+
   return (
     <article
       className={styles.passage}
@@ -384,34 +425,21 @@ export function HighlightablePassage({
     >
       <h2>{passage.title}</h2>
       {passage.subtitle ? <h3>{passage.subtitle}</h3> : null}
-      {passage.body.map((paragraph, index) => {
-        const blockId = `${passage.id}:p:${index}`;
-        return (
-          <p
-            data-highlight-block-id={blockId}
-            data-passage-id={passage.id}
-            key={blockId}
-          >
-            {renderMarkedText(
-              paragraph,
-              blockHighlights(highlights, passage.id, blockId),
-              notes.filter(
-                (note) =>
-                  note.passageId === passage.id && note.blockId === blockId,
-              ),
-              (event, mark) => {
-                event.preventDefault();
-                setMenu({
-                  x: event.clientX,
-                  y: event.clientY,
-                  highlightId: mark.highlightId,
-                  noteId: mark.noteId,
-                });
-              },
-              openExistingNote,
-            )}
-          </p>
-        );
+      {contentBlocks.map((block) => {
+        if (block.type === "text") {
+          return renderTextParagraph(block.content, block.id);
+        }
+
+        if (block.type === "image") {
+          const asset = assets.find((item) => item.id === block.assetId);
+          return asset ? (
+            <div className={styles.inlineFigure} key={block.id}>
+              <AssetImage asset={{ ...asset, description: block.caption ?? asset.description }} />
+            </div>
+          ) : null;
+        }
+
+        return null;
       })}
       {menu ? (
         <div

@@ -41,6 +41,19 @@
   vertical-align: text-top;
 }
 
+.inlineFigure {
+  margin: 14px 0 18px;
+}
+
+.inlineFigure figure {
+  margin: 0;
+}
+
+.inlineFigure img {
+  max-height: 520px;
+  object-fit: contain;
+}
+
 .contextMenu {
   background: #fff;
   border: 1px solid #333;
