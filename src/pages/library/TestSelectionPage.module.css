@@ -20,13 +20,27 @@
   margin-bottom: 0;
 }
 
-.header a {
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.header a,
+.header button {
+  background: #fff;
   border: 1px solid #333;
   color: #111;
   display: inline-block;
+  font: inherit;
   padding: 8px 12px;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.header button {
+  cursor: pointer;
 }
 
 .testPanel {
@@ -83,6 +97,10 @@
 
   .header {
     display: grid;
+  }
+
+  .headerActions {
+    justify-content: flex-start;
   }
 
   .testHeader strong {

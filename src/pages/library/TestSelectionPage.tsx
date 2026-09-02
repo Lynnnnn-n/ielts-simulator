@@ -13,6 +13,7 @@ import styles from "./TestSelectionPage.module.css";
 export function TestSelectionPage() {
   const [tests, setTests] = useState<MockTest[]>([]);
   const restoreSession = useExamStore((state) => state.restoreSession);
+  const resetModule = useExamStore((state) => state.resetModule);
   const sessions = useExamStore((state) => state.sessions);
 
   useEffect(() => {
@@ -25,6 +26,22 @@ export function TestSelectionPage() {
     });
   }, [restoreSession, tests]);
 
+  function handleResetAll() {
+    const shouldReset = window.confirm(
+      "Reset all mock tests and clear all saved answers?",
+    );
+
+    if (!shouldReset) {
+      return;
+    }
+
+    tests.forEach((test) => {
+      getAvailableModules(test).forEach((module) =>
+        resetModule(test.metadata.id, module),
+      );
+    });
+  }
+
   return (
     <main className={styles.page}>
       <section className={styles.header}>
@@ -35,7 +52,12 @@ export function TestSelectionPage() {
             you enter that test.
           </p>
         </div>
-        <Link to="/admin/tests">Test Management</Link>
+        <div className={styles.headerActions}>
+          <button type="button" onClick={handleResetAll}>
+            Reset all
+          </button>
+          <Link to="/admin/tests">Test Management</Link>
+        </div>
       </section>
 
       {tests.map((test) => {
