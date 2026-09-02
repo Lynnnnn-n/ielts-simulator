@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   ReadingPassage,
   TextHighlight,
@@ -196,6 +196,34 @@ export function HighlightablePassage({
 }: HighlightablePassageProps) {
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const [noteEditor, setNoteEditor] = useState<NoteEditorState | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const noteEditorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!menu && !noteEditor) {
+      return;
+    }
+
+    function closeFloatingControls(event: PointerEvent) {
+      const target = event.target as Node | null;
+
+      if (
+        target &&
+        (menuRef.current?.contains(target) ||
+          noteEditorRef.current?.contains(target))
+      ) {
+        return;
+      }
+
+      setMenu(null);
+      window.getSelection()?.removeAllRanges();
+    }
+
+    document.addEventListener("pointerdown", closeFloatingControls);
+    return () => {
+      document.removeEventListener("pointerdown", closeFloatingControls);
+    };
+  }, [menu, noteEditor]);
 
   function openSelectionMenu(event: React.MouseEvent) {
     const range = getSelectionRange();
@@ -388,6 +416,7 @@ export function HighlightablePassage({
       {menu ? (
         <div
           className={styles.contextMenu}
+          ref={menuRef}
           style={{ left: menu.x, top: menu.y }}
           role="menu"
         >
@@ -425,6 +454,7 @@ export function HighlightablePassage({
       {noteEditor ? (
         <div
           className={styles.noteEditor}
+          ref={noteEditorRef}
           style={{ left: noteEditor.x, top: noteEditor.y }}
         >
           <textarea

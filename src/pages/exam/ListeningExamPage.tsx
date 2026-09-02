@@ -175,6 +175,7 @@ export function ListeningExamPage() {
               />
             </div>
             <EmbeddedQuestionSheet
+              assets={loadedTest.assets}
               answers={session.answers}
               testId={loadedTest.metadata.id}
               module="listening"

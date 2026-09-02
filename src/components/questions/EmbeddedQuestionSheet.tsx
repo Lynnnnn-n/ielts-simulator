@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import type { ExamModule, Question } from "../../domain/examTypes";
+import { AssetImage } from "../exam/AssetImage";
+import type { ExamModule, Question, TestAsset } from "../../domain/examTypes";
 import styles from "./EmbeddedQuestionSheet.module.css";
 
 interface EmbeddedQuestionSheetProps {
@@ -8,6 +9,7 @@ interface EmbeddedQuestionSheetProps {
   module: ExamModule;
   questionIds: string[];
   questions: Question[];
+  assets?: TestAsset[];
   answers: Record<string, string>;
   isReviewMode?: boolean;
   onAnswer: (questionId: string, value: string) => void;
@@ -38,9 +40,16 @@ interface ManualChoicePlan {
 interface ManualTablePlan {
   start: number;
   end: number;
+  leadLines?: string[];
   title: string;
   headers: string[];
   rows: string[][];
+}
+
+interface ManualVisualPlan {
+  start: number;
+  end: number;
+  assetIds: string[];
 }
 
 const blankPattern = /(?:\. ?){4,}|_{4,}|…+/g;
@@ -214,6 +223,25 @@ const manualChoicePlans: Record<string, ManualChoicePlan[]> = {
 const manualTablePlans: Record<string, ManualTablePlan[]> = {
   "mock-test-01:listening": [
     {
+      start: 1,
+      end: 4,
+      leadLines: [
+        "Questions 1-4",
+        "Complete the notes below.",
+        "Write NO MORE THAN THREE WORDS AND/OR A NUMBER for each answer.",
+      ],
+      title: "NOTES ON SOCIAL PROGRAMME",
+      headers: ["Example", "Answer"],
+      rows: [
+        ["Number of trips per month:", "5"],
+        ["Visit places which have:", "- historical interest\n- good {1}\n- {2}"],
+        ["Cost:", "between GBP5.00 and GBP15.00 per person"],
+        ["Note:", "special trips organised for groups of {3} people"],
+        ["Time:", "departure - 8.30 a.m.\nreturn - 6.00 p.m."],
+        ["To reserve a seat:", "sign name on the {4} 3 days in advance"],
+      ],
+    },
+    {
       start: 5,
       end: 10,
       title: "WEEKEND TRIPS",
@@ -238,6 +266,30 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
         ["Open all day", "{6} and Gardens"],
         ["NOT open on Mondays", "{7} and Castle"],
         ["Free entry", "{8} and Markets"],
+      ],
+    },
+    {
+      start: 21,
+      end: 24,
+      leadLines: [
+        "Questions 21-24",
+        "Complete the notes below.",
+        "Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
+      ],
+      title: "DETAILS OF ASSIGNMENT",
+      headers: ["Part", "Task", "Details"],
+      rows: [
+        [
+          "Part 1",
+          "Essay",
+          "Title: 'Assess the two main methods of {21} in social science research'\nNumber of words: {22}",
+        ],
+        [
+          "Part 2",
+          "Small-scale study",
+          "Choose one method.\nGather data from at least {23} subjects.",
+        ],
+        ["Part 3", "Report on study", "Number of words: {24}"],
       ],
     },
     {
@@ -279,6 +331,23 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
       ],
     },
     {
+      start: 31,
+      end: 32,
+      leadLines: [
+        "Questions 31 and 32",
+        "Complete the notes below.",
+        "Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
+      ],
+      title: "New Union Building",
+      headers: ["Procedure", "Notes"],
+      rows: [
+        [
+          "Procedures to establish student opinion",
+          "- students were asked to give written suggestions on the building's design\n- these points informed the design of a {31}\n  (there were {32} respondents)\n- results collated and report produced by Union Committee",
+        ],
+      ],
+    },
+    {
       start: 33,
       end: 37,
       title: "CHOICE OF SITE",
@@ -290,6 +359,29 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
     },
   ],
   "mock-test-04:listening": [
+    {
+      start: 1,
+      end: 10,
+      leadLines: [
+        "Questions 1-10",
+        "Complete the notes below.",
+        "Write NO MORE THAN THREE WORDS AND/OR A NUMBER for each answer.",
+      ],
+      title: "GOODBYE PARTY FOR JOHN",
+      headers: ["Item", "Details"],
+      rows: [
+        ["Example: Date", "22nd December"],
+        ["Venue", "{1}"],
+        [
+          "Invitations (Tony)",
+          "Who to invite:\n- John and his wife\n- Director\n- the {2}\n- all the teachers\n- all the {3}\nDate for sending invitations: {4}",
+        ],
+        [
+          "Present (Lisa)",
+          "Collect money during the {5}\nSuggested amount per person: ${6}\nCheck prices for:\n- CD players\n- {7}\n- coffee maker\nAsk guests to bring:\n- snacks\n- {8}\n- {9}\nAsk student representative to prepare a {10}",
+        ],
+      ],
+    },
     {
       start: 16,
       end: 20,
@@ -342,6 +434,13 @@ const manualTablePlans: Record<string, ManualTablePlan[]> = {
   ],
 };
 
+const manualVisualPlans: Record<string, ManualVisualPlan[]> = {
+  "mock-test-01:listening": [
+    { start: 14, end: 20, assetIds: ["test1-page-14"] },
+    { start: 28, end: 30, assetIds: ["test1-page-17"] },
+  ],
+};
+
 function getManualChoicePlan(
   testId: string,
   module: ExamModule,
@@ -354,6 +453,12 @@ function getManualChoicePlan(
 
 function getManualTablePlan(testId: string, module: ExamModule, number: number) {
   return manualTablePlans[`${testId}:${module}`]?.find(
+    (plan) => number >= plan.start && number <= plan.end,
+  );
+}
+
+function getManualVisualPlan(testId: string, module: ExamModule, number: number) {
+  return manualVisualPlans[`${testId}:${module}`]?.find(
     (plan) => number >= plan.start && number <= plan.end,
   );
 }
@@ -659,6 +764,24 @@ function renderLineWithoutBlanks(line: string) {
   return line.replace(blankPattern, "").replace(/\s{2,}/g, " ").trim();
 }
 
+function splitExampleBlock(lines: string[], questionNumber: number) {
+  const exampleStart = lines.findIndex((line) => /^Example\b/i.test(line.trim()));
+
+  if (exampleStart < 0) {
+    return { before: lines, example: [], after: [] };
+  }
+
+  const exampleEnd = lines.findIndex((line, index) => {
+    return index > exampleStart && hasDirectQuestionNumber(line, questionNumber);
+  });
+
+  return {
+    before: lines.slice(0, exampleStart),
+    example: lines.slice(exampleStart, exampleEnd >= 0 ? exampleEnd : lines.length),
+    after: exampleEnd >= 0 ? lines.slice(exampleEnd) : [],
+  };
+}
+
 function renderLineWithInput(
   line: string,
   questionId: string,
@@ -715,6 +838,7 @@ export function EmbeddedQuestionSheet({
   module,
   questionIds,
   questions,
+  assets = [],
   answers,
   isReviewMode = false,
   onAnswer,
@@ -742,7 +866,7 @@ export function EmbeddedQuestionSheet({
   }
 
   function renderCellContent(cell: string) {
-    const parts: ReactNode[] = [];
+    const parts: Array<ReactNode | string> = [];
     const placeholderPattern = /\{(\d{1,2})\}/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
@@ -762,23 +886,44 @@ export function EmbeddedQuestionSheet({
 
     parts.push(cell.slice(lastIndex));
 
-    return parts.map((part, index) => (
-      <span key={`cell-part:${index}`}>{part}</span>
-    ));
+    return parts.flatMap((part, index) => {
+      if (typeof part !== "string") {
+        return <span key={`cell-part:${index}`}>{part}</span>;
+      }
+
+      return part.split("\n").flatMap((line, lineIndex) => {
+        const key = `cell-part:${index}:${lineIndex}`;
+        return lineIndex === 0
+          ? [<span key={key}>{line}</span>]
+          : [
+              <br key={`${key}:break`} />,
+              <span key={key}>{line}</span>,
+            ];
+      });
+    });
   }
 
   function renderTable(plan: ManualTablePlan) {
     return (
       <div className={styles.tableWrap}>
+        {plan.leadLines?.length ? (
+          <div className={styles.tableLead}>
+            {plan.leadLines.map((line) => (
+              <p key={`${plan.title}:lead:${line}`}>{line}</p>
+            ))}
+          </div>
+        ) : null}
         <h3 className={styles.tableTitle}>{plan.title}</h3>
         <table className={styles.completionTable}>
-          <thead>
-            <tr>
-              {plan.headers.map((header) => (
-                <th key={header || "blank"}>{header}</th>
-              ))}
-            </tr>
-          </thead>
+          {plan.headers.length > 0 ? (
+            <thead>
+              <tr>
+                {plan.headers.map((header) => (
+                  <th key={header || "blank"}>{header}</th>
+                ))}
+              </tr>
+            </thead>
+          ) : null}
           <tbody>
             {plan.rows.map((row, rowIndex) => (
               <tr key={`${plan.title}:row:${rowIndex}`}>
@@ -795,15 +940,66 @@ export function EmbeddedQuestionSheet({
     );
   }
 
+  function renderVisualAssets(plan: ManualVisualPlan) {
+    return plan.assetIds
+      .map((assetId) => assets.find((asset) => asset.id === assetId))
+      .filter((asset): asset is TestAsset => Boolean(asset))
+      .map((asset) => (
+        <div className={styles.visualAsset} key={asset.id}>
+          <AssetImage asset={asset} />
+        </div>
+      ));
+  }
+
+  function renderBodyLines(
+    lines: string[],
+    item: QuestionItem,
+    usesSharedChoices: boolean,
+  ) {
+    const blocks = splitExampleBlock(lines, item.number);
+
+    function renderLines(partLines: string[], keyPrefix: string) {
+      return partLines.map((line, index) => (
+        <p
+          className={
+            sectionHeadingPattern.test(line.trim())
+              ? styles.sectionLine
+              : styles.promptLine
+          }
+          key={`${item.questionId}:${keyPrefix}:${index}`}
+        >
+          {usesSharedChoices
+            ? renderLineWithoutBlanks(line)
+            : renderLineWithInput(line, item.questionId, item.number, () =>
+                renderInput(item.questionId, item.number, true),
+              )}
+        </p>
+      ));
+    }
+
+    return (
+      <>
+        {renderLines(blocks.before, "line-before-example")}
+        {blocks.example.length > 0 ? (
+          <div className={styles.exampleBlock}>
+            {renderLines(blocks.example, "example")}
+          </div>
+        ) : null}
+        {renderLines(blocks.after, "line-after-example")}
+      </>
+    );
+  }
+
   function renderQuestion(item: QuestionItem) {
     const manualPlan = getManualChoicePlan(testId, module, item.number);
     const tablePlan = getManualTablePlan(testId, module, item.number);
+    const visualPlan = getManualVisualPlan(testId, module, item.number);
     if (tablePlan && item.number !== tablePlan.start) {
       return null;
     }
-
+    const sourceLines = [...item.introLines, ...item.bodyLines];
     const extractedBodyChoices = choicesMatchingPlan(
-      optionChoices(item.bodyLines),
+      optionChoices(sourceLines),
       manualPlan,
     );
     const extractedChoices = dedupeChoices(extractedBodyChoices);
@@ -820,9 +1016,11 @@ export function EmbeddedQuestionSheet({
       (module !== "listening" && choices.length >= 2 && !bodyHasBlank);
     const shouldShowFallbackInput =
       !usesSharedChoices && !usesLetterRow && !shouldShowChoices && !bodyHasBlank;
-    const visibleIntroLines = item.showSharedChoices
-      ? withoutOptionLines(item.introLines)
-      : item.introLines;
+    const visibleIntroLines = tablePlan
+      ? []
+      : usesSharedChoices
+        ? withoutOptionLines(item.introLines)
+        : item.introLines;
     const visibleBodyLines = shouldShowChoices || usesSharedChoices
       ? withoutOptionLines(item.bodyLines)
       : item.bodyLines;
@@ -833,6 +1031,7 @@ export function EmbeddedQuestionSheet({
     const showOptionBank =
       manualPlan?.style === "option-bank" ? item.number === manualPlan.start : false;
     const isTableGroup = Boolean(tablePlan);
+    const shouldShowVisualAssets = Boolean(visualPlan && item.number === visualPlan.start);
 
     return (
       <article
@@ -865,25 +1064,9 @@ export function EmbeddedQuestionSheet({
         ) : null}
         <div className={styles.bodyBlock}>
           {tablePlan ? renderTable(tablePlan) : null}
+          {shouldShowVisualAssets && visualPlan ? renderVisualAssets(visualPlan) : null}
           {!isTableGroup && item.bodyLines.length > 0 ? (
-            visibleBodyLines.map((line, index) => {
-              return (
-                <p
-                  className={
-                    sectionHeadingPattern.test(line.trim())
-                      ? styles.sectionLine
-                      : styles.promptLine
-                  }
-                  key={`${item.questionId}:line:${index}`}
-                >
-                  {usesSharedChoices
-                    ? renderLineWithoutBlanks(line)
-                    : renderLineWithInput(line, item.questionId, item.number, () =>
-                        renderInput(item.questionId, item.number, true),
-                      )}
-                </p>
-              );
-            })
+            renderBodyLines(visibleBodyLines, item, usesSharedChoices)
           ) : !isTableGroup ? (
             <p className={styles.promptLine}>Question {item.number}</p>
           ) : null}
