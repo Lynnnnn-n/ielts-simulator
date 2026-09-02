@@ -764,6 +764,10 @@ function renderLineWithoutBlanks(line: string) {
   return line.replace(blankPattern, "").replace(/\s{2,}/g, " ").trim();
 }
 
+function shouldRenderChoiceText(choice: ChoiceOption) {
+  return choice.text.trim() !== choice.label.trim();
+}
+
 function splitExampleBlock(lines: string[], questionNumber: number) {
   const exampleStart = lines.findIndex((line) => /^Example\b/i.test(line.trim()));
 
@@ -1057,7 +1061,7 @@ export function EmbeddedQuestionSheet({
             {bankChoices.map((choice) => (
               <p className={styles.optionBankLine} key={`${item.questionId}:bank:${choice.label}`}>
                 <span className={styles.choiceLabel}>{choice.label}</span>
-                <span>{choice.text}</span>
+                {shouldRenderChoiceText(choice) ? <span>{choice.text}</span> : null}
               </p>
             ))}
           </div>
@@ -1094,7 +1098,7 @@ export function EmbeddedQuestionSheet({
                     }}
                   />
                   <span className={styles.choiceLabel}>{choice.label}</span>
-                  <span>{choice.text}</span>
+                  {shouldRenderChoiceText(choice) ? <span>{choice.text}</span> : null}
                 </label>
               ))}
             </div>
